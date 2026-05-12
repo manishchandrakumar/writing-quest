@@ -2,9 +2,13 @@
 import Brand from './Brand.astro';
 const { active = '', showStats = false } = Astro.props;
 const links = [
-  { href: '/',         label: 'Home',  key: 'home' },
-  { href: '/quest',    label: 'Quest', key: 'quest' },
-  { href: '/about',    label: 'About', key: 'about' },
+  { href: '/',           label: 'Home',       key: 'home' },
+  { href: '/quest',      label: 'Quest',      key: 'quest' },
+  { href: '/reviews',    label: 'Reviews',    key: 'reviews' },
+  { href: '/worksheets', label: 'Worksheets', key: 'worksheets' },
+  { href: '/gallery',    label: 'Gallery',    key: 'gallery' },
+  { href: '/parent',     label: 'Parent',     key: 'parent' },
+  { href: '/about',      label: 'About',      key: 'about' },
 ];
 ---
 <header class="topbar">

@@ -1,0 +1,93 @@
+---
+import Base from '../layouts/Base.astro';
+import days from '../data/days.json';
+
+// Discover every completed photo at build time. Filename pattern: Day_NN_Theme_YYYY-MM-DD.jpg
+const photoModules = import.meta.glob('/public/worksheets/completed/Day_*.jpg', { eager: false });
+const filenames = Object.keys(photoModules).map(p => p.split('/').pop());
+
+function parseFilename(name) {
+  // Day_01_Mission_Start_2026-05-11.jpg → { n: 1, theme: "Mission Start", date: "2026-05-11" }
+  const m = name.match(/^Day_(\d{2})_(.+)_(\d{4}-\d{2}-\d{2})\.jpe?g$/i);
+  if (!m) return null;
+  return {
+    n: parseInt(m[1], 10),
+    themeSlug: m[2],
+    theme: m[2].replace(/_/g, ' '),
+    date: m[3],
+    file: name,
+  };
+}
+
+const photos = filenames
+  .map(parseFilename)
+  .filter(Boolean)
+  .sort((a, b) => b.n - a.n); // newest day first
+
+// Cross-reference theme to the canonical day data so we show the official theme name
+for (const p of photos) {
+  const d = days.days[p.n - 1];
+  if (d) p.theme = d.theme;
+}
+---
+<Base title="Gallery — Arnav's Writing Quest" active="gallery">
+
+<main class="wrap single">
+  <div class="page-head">
+    <h1>Gallery</h1>
+    <p class="sub">
+      {photos.length === 0
+        ? 'Photos of completed worksheets will appear here as Arnav works through the program.'
+        : `${photos.length} completed worksheet${photos.length === 1 ? '' : 's'} · click any photo to see it full size.`}
+    </p>
+  </div>
+
+  {photos.length === 0 ? (
+    <div class="gallery-empty">
+      No worksheets in the gallery yet. The first photo lands here as soon as Arnav finishes Day 1.
+    </div>
+  ) : (
+    <div class="gallery-grid">
+      {photos.map(p => (
+        <div class="gallery-card" data-src={`/worksheets/completed/${p.file}`} data-day={p.n} data-theme={p.theme} data-date={p.date}>
+          <img src={`/worksheets/completed/${p.file}`} alt={`Arnav's Day ${p.n} worksheet — ${p.theme}`} loading="lazy" />
+          <div class="cap">
+            <div class="day">Day {p.n} · {p.date}</div>
+            <div class="theme">{p.theme}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  )}
+</main>
+
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <img id="lightboxImg" src="" alt="" />
+  <div class="lightbox-cap" id="lightboxCap"></div>
+</div>
+
+<script>
+  const lb = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lightboxImg');
+  const lbCap = document.getElementById('lightboxCap');
+
+  document.querySelectorAll('.gallery-card').forEach(card => {
+    card.addEventListener('click', () => {
+      lbImg.src = card.dataset.src;
+      lbImg.alt = `Day ${card.dataset.day} — ${card.dataset.theme}`;
+      lbCap.textContent = `Day ${card.dataset.day} · ${card.dataset.theme} · ${card.dataset.date}`;
+      lb.classList.add('open');
+      lb.setAttribute('aria-hidden', 'false');
+    });
+  });
+
+  function closeLb() {
+    lb.classList.remove('open');
+    lb.setAttribute('aria-hidden', 'true');
+    lbImg.src = '';
+  }
+  lb.addEventListener('click', closeLb);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLb(); });
+</script>
+
+</Base>

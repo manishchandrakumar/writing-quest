@@ -1,0 +1,202 @@
+---
+import Base from '../layouts/Base.astro';
+import days from '../data/days.json';
+import reviews from '../data/reviews.json';
+
+const verifiedList = (reviews.verified || []).slice().sort((a, b) => a.day - b.day);
+const verifiedByDay = new Map(verifiedList.map(v => [v.day, v]));
+
+// Aggregates
+let totalXp = 0, linesTargetSum = 0, linesActualSum = 0, beatTargetCount = 0;
+let readSum = 0, readCount = 0, phaseSum = 0, phaseCount = 0, spellSum = 0;
+let timeSum = 0, timeCount = 0;
+for (const v of verifiedList) {
+  totalXp += (v.xp || 0);
+  const m = v.metrics || {};
+  if (m.linesTarget != null && m.linesActual != null) {
+    linesTargetSum += m.linesTarget;
+    linesActualSum += m.linesActual;
+    if (m.linesActual >= m.linesTarget) beatTargetCount++;
+  }
+  if (m.readability != null) { readSum += m.readability; readCount++; }
+  if (m.phaseQuality != null) { phaseSum += m.phaseQuality; phaseCount++; }
+  if (m.spellWordsUsed != null) spellSum += m.spellWordsUsed;
+  if (m.timeMinutes != null) { timeSum += m.timeMinutes; timeCount++; }
+}
+
+const avgRead = readCount ? (readSum / readCount).toFixed(1) : '—';
+const avgPhase = phaseCount ? (phaseSum / phaseCount).toFixed(1) : '—';
+const avgTime = timeCount ? Math.round(timeSum / timeCount) : null;
+const beatPct = verifiedList.length ? Math.round((beatTargetCount / verifiedList.length) * 100) : 0;
+
+// Find today's day and current phase
+const todayN = (() => {
+  for (let i = 1; i <= 60; i++) if (!verifiedByDay.has(i)) return i;
+  return 60;
+})();
+const todayDay = days.days[todayN - 1];
+const currentPhase = todayDay.phase;
+const phaseRules = {
+  1: { name: 'Fluency (Days 1–14) / Story (15–21)', focus: 'Effort, finishing, idea flow.', avoid: 'Spelling, grammar, neatness, handwriting style.' },
+  2: { name: 'Paragraph shape (22–35) / Explain (36–42)', focus: 'Structure, spelling, connectors.', avoid: 'Sentence variety, advanced grammar, tone.' },
+  3: { name: 'Timed / Opinion / Class 6 (43–60)', focus: 'Speed, reasons, examples, full structure.', avoid: 'Stylistic flourish outside the week\'s goal.' },
+};
+const rule = phaseRules[currentPhase];
+---
+<Base title="Parent — Arnav's Writing Quest" active="parent" loadChart={true}>
+
+<main class="wrap single">
+  <div class="page-head">
+    <h1>Parent dashboard</h1>
+    <p class="sub">Trends across {verifiedList.length} verified day{verifiedList.length === 1 ? '' : 's'}. This view is for Manish — Arnav stays on the Quest page.</p>
+  </div>
+
+  {verifiedList.length === 0 ? (
+    <p class="empty-state">
+      No verified reviews yet. Once Claude reviews the first worksheet and `./tools/sync.sh` runs, trends will appear here.
+    </p>
+  ) : (
+    <>
+      <div class="dash-grid" style="margin-bottom:24px;">
+        <div class="dash-card">
+          <h3>Days verified</h3>
+          <div class="big-n">{verifiedList.length}<span style="font-size:18px;color:var(--ink3);"> / 60</span></div>
+          <div class="lbl">{Math.round((verifiedList.length / 60) * 100)}% of program complete</div>
+        </div>
+        <div class="dash-card">
+          <h3>Total XP</h3>
+          <div class="big-n">{totalXp}</div>
+          <div class="lbl">across all verified reviews</div>
+        </div>
+        <div class="dash-card">
+          <h3>Hits line target</h3>
+          <div class="big-n">{beatPct}%</div>
+          <div class="lbl">{beatTargetCount} of {verifiedList.length} day{verifiedList.length === 1 ? '' : 's'} at or above target</div>
+        </div>
+        <div class="dash-card">
+          <h3>Readability</h3>
+          <div class="big-n">{avgRead}<span style="font-size:18px;color:var(--ink3);"> / 5</span></div>
+          <div class="lbl">average across reviews</div>
+        </div>
+        <div class="dash-card">
+          <h3>Phase quality</h3>
+          <div class="big-n">{avgPhase}<span style="font-size:18px;color:var(--ink3);"> / 5</span></div>
+          <div class="lbl">vs. that day's phase goal</div>
+        </div>
+        <div class="dash-card">
+          <h3>{avgTime != null ? 'Avg. time' : 'Spelling-bank words'}</h3>
+          {avgTime != null ? (
+            <>
+              <div class="big-n">{avgTime}<span style="font-size:18px;color:var(--ink3);"> min</span></div>
+              <div class="lbl">when timed</div>
+            </>
+          ) : (
+            <>
+              <div class="big-n">{spellSum}</div>
+              <div class="lbl">used correctly to date</div>
+            </>
+          )}
+        </div>
+      </div>
+
+      <div class="dash-grid">
+        <div class="dash-card chart-card">
+          <h3>Lines: target vs actual</h3>
+          <div class="chart-wrap"><canvas id="linesChart"></canvas></div>
+        </div>
+        <div class="dash-card chart-card">
+          <h3>Readability &amp; phase quality (out of 5)</h3>
+          <div class="chart-wrap"><canvas id="qualityChart"></canvas></div>
+        </div>
+        <div class="dash-card chart-card">
+          <h3>Cumulative XP</h3>
+          <div class="chart-wrap"><canvas id="xpChart"></canvas></div>
+        </div>
+      </div>
+    </>
+  )}
+
+  <div class="dash-card" style="margin-top:24px;">
+    <h3>Current phase reminder</h3>
+    <p style="font-size:14px;font-weight:700;color:var(--ink);">
+      <b style="color:var(--green-dark);">{rule.name}</b>
+    </p>
+    <p style="font-size:13px;color:var(--ink2);margin-top:8px;line-height:1.5;">
+      <b style="color:var(--ink);">Coach focuses on:</b> {rule.focus}
+    </p>
+    <p style="font-size:13px;color:var(--ink2);margin-top:6px;line-height:1.5;">
+      <b style="color:var(--red-dark);">Don't mention to Arnav:</b> {rule.avoid}
+    </p>
+    <p style="font-size:12px;color:var(--ink3);margin-top:12px;font-style:italic;">
+      Hard rule: fluency before perfection, confidence before correction, momentum before neatness.
+    </p>
+  </div>
+</main>
+
+<script id="reviewsData" type="application/json" set:html={JSON.stringify(verifiedList)}></script>
+<script id="daysData" type="application/json" set:html={JSON.stringify(days.days)}></script>
+
+<script>
+  const VERIFIED = JSON.parse(document.getElementById('reviewsData').textContent);
+  const DAYS = JSON.parse(document.getElementById('daysData').textContent);
+
+  if (!VERIFIED.length || typeof Chart === 'undefined') {
+    // Nothing to render or Chart.js failed to load — skip silently.
+  } else {
+    const labels = VERIFIED.map(v => `D${v.day}`);
+    const fontOpts = { family: 'Nunito', weight: '700' };
+    const baseScales = {
+      x: { ticks: { font: fontOpts, color: '#AFAFAF' }, grid: { display: false } },
+      y: { ticks: { font: fontOpts, color: '#AFAFAF' }, grid: { color: '#F0F0F0' }, beginAtZero: true },
+    };
+    const linesEl = document.getElementById('linesChart');
+    if (linesEl) {
+      new Chart(linesEl.getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [
+            { label: 'Target', data: VERIFIED.map(v => v.metrics?.linesTarget ?? null), backgroundColor: 'rgba(175,175,175,.55)', borderRadius: 4 },
+            { label: 'Actual', data: VERIFIED.map(v => v.metrics?.linesActual ?? null), backgroundColor: '#58CC02', borderRadius: 4 },
+          ],
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { font: fontOpts, color: '#3C3C3C' } } }, scales: baseScales },
+      });
+    }
+    const qualEl = document.getElementById('qualityChart');
+    if (qualEl) {
+      new Chart(qualEl.getContext('2d'), {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            { label: 'Readability', data: VERIFIED.map(v => v.metrics?.readability ?? null), borderColor: '#1CB0F6', backgroundColor: 'rgba(28,176,246,.15)', tension: 0.3, pointRadius: 4, borderWidth: 3, fill: false, spanGaps: true },
+            { label: 'Phase quality', data: VERIFIED.map(v => v.metrics?.phaseQuality ?? null), borderColor: '#CE82FF', backgroundColor: 'rgba(206,130,255,.15)', tension: 0.3, pointRadius: 4, borderWidth: 3, fill: false, spanGaps: true },
+          ],
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { labels: { font: fontOpts, color: '#3C3C3C' } } },
+          scales: { ...baseScales, y: { ...baseScales.y, min: 0, max: 5, ticks: { ...baseScales.y.ticks, stepSize: 1 } } },
+        },
+      });
+    }
+    const xpEl = document.getElementById('xpChart');
+    if (xpEl) {
+      let cum = 0;
+      const cumData = VERIFIED.map(v => (cum += (v.xp || 0)));
+      new Chart(xpEl.getContext('2d'), {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            { label: 'Cumulative XP', data: cumData, borderColor: '#FFC800', backgroundColor: 'rgba(255,200,0,.2)', tension: 0.3, pointRadius: 4, borderWidth: 3, fill: true },
+          ],
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: baseScales },
+      });
+    }
+  }
+</script>
+
+</Base>

@@ -1,0 +1,142 @@
+---
+import Base from '../layouts/Base.astro';
+import days from '../data/days.json';
+import reviews from '../data/reviews.json';
+
+const verifiedByDay = new Map();
+for (const v of (reviews.verified || [])) {
+  verifiedByDay.set(v.day, v);
+}
+
+const cells = days.days.map(d => {
+  const v = verifiedByDay.get(d.n);
+  return {
+    n: d.n,
+    theme: d.theme,
+    boss: d.boss,
+    phase: d.phase,
+    target: d.lines,
+    prompt: d.prompt,
+    review: v || null,
+  };
+});
+
+const totalDone = verifiedByDay.size;
+const totalBoss = [...verifiedByDay.values()].filter(v => {
+  const day = days.days[v.day - 1];
+  return day && day.boss;
+}).length;
+---
+<Base title="Reviews — Arnav's Writing Quest" active="reviews">
+
+<main class="wrap single">
+  <div class="page-head">
+    <h1>Coach reviews</h1>
+    <p class="sub">{totalDone} of 60 days verified · {totalBoss} boss day{totalBoss === 1 ? '' : 's'} cleared · click any cell to read the review.</p>
+  </div>
+
+  <div class="legend">
+    <span><span class="sw done"></span>Verified</span>
+    <span><span class="sw boss"></span>Boss day</span>
+    <span><span class="sw future"></span>Upcoming</span>
+  </div>
+
+  <div class="heatmap" id="heatmap">
+    {cells.map(c => {
+      const cls = [
+        'cell',
+        c.review ? 'done' : 'future',
+        c.boss ? (c.review ? 'boss' : 'boss-future') : '',
+        c.review ? '' : 'empty',
+      ].filter(Boolean).join(' ');
+      return (
+        <button
+          class={cls}
+          data-day={c.n}
+          aria-label={`Day ${c.n}: ${c.theme}${c.review ? ` — ${c.review.xp} XP` : ''}`}
+          title={`Day ${c.n} — ${c.theme}${c.boss ? ' (BOSS)' : ''}`}
+        >
+          <span class="day-num">{c.n}</span>
+          {c.review && <span class="day-xp">+{c.review.xp}</span>}
+        </button>
+      );
+    })}
+  </div>
+
+  <div id="reviewDetail" class="review-detail" style="display:none;"></div>
+
+  {totalDone === 0 && (
+    <p class="empty-state" style="margin-top:24px;">
+      No verified reviews yet. The first one appears here as soon as Arnav finishes Day 1 and Manish runs the coach review.
+    </p>
+  )}
+</main>
+
+<script id="cellsData" type="application/json" set:html={JSON.stringify(cells)}></script>
+
+<script>
+  const CELLS = JSON.parse(document.getElementById('cellsData').textContent);
+  const detail = document.getElementById('reviewDetail');
+
+  function phaseLabel(p) { return p === 1 ? 'Fluency' : p === 2 ? 'Structure' : 'Independence'; }
+  function escapeHtml(s) {
+    return (s || '').replace(/[&<>'"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[c]));
+  }
+
+  function show(n) {
+    const cell = CELLS.find(c => c.n === n);
+    if (!cell) return;
+    if (!cell.review) {
+      detail.style.display = 'block';
+      detail.innerHTML = `
+        <div class="hd">
+          <div>
+            <h2>Day ${cell.n} — ${escapeHtml(cell.theme)}</h2>
+            <p style="color:var(--ink2);font-weight:700;margin-top:4px;font-size:14px;">${escapeHtml(cell.prompt)}</p>
+          </div>
+          <span class="phase-pill">Phase ${cell.phase} · ${phaseLabel(cell.phase)}${cell.boss ? ' · BOSS' : ''}</span>
+        </div>
+        <p style="margin-top:18px;color:var(--ink2);font-weight:700;font-size:14px;">
+          Not yet completed. Target: <b>${cell.target}</b> lines.${cell.boss ? ' Boss day — +15 XP bonus.' : ''}
+        </p>`;
+      detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      return;
+    }
+    const r = cell.review;
+    const m = r.metrics || {};
+    const praises = (r.praises || []).map(p => `<p>${escapeHtml(p)}</p>`).join('');
+    const metrics = [
+      m.linesTarget != null && m.linesActual != null
+        ? `<div class="metric"><div class="v">${m.linesActual} / ${m.linesTarget}</div><div class="l">Lines</div></div>` : '',
+      m.readability != null ? `<div class="metric"><div class="v">${m.readability}/5</div><div class="l">Readability</div></div>` : '',
+      m.phaseQuality != null ? `<div class="metric"><div class="v">${m.phaseQuality}/5</div><div class="l">Phase quality</div></div>` : '',
+      m.spellWordsUsed != null ? `<div class="metric"><div class="v">${m.spellWordsUsed}</div><div class="l">Spell words</div></div>` : '',
+      m.timeMinutes != null ? `<div class="metric"><div class="v">${m.timeMinutes} min</div><div class="l">Time</div></div>` : '',
+      `<div class="metric"><div class="v">+${r.xp}</div><div class="l">XP</div></div>`,
+    ].filter(Boolean).join('');
+
+    detail.style.display = 'block';
+    detail.innerHTML = `
+      <div class="hd">
+        <div>
+          <h2>Day ${r.day} — ${escapeHtml(r.theme || cell.theme)}</h2>
+          ${r.date ? `<p style="color:var(--ink2);font-weight:700;margin-top:4px;font-size:13px;">${escapeHtml(r.date)}${r.lang ? ` · written in ${escapeHtml(r.lang)}` : ''}</p>` : ''}
+        </div>
+        <span class="phase-pill">Phase ${cell.phase} · ${phaseLabel(cell.phase)}${cell.boss ? ' · BOSS' : ''}</span>
+      </div>
+      <div class="praises">${praises}</div>
+      ${r.next ? `<div class="next-up"><b>Next:</b> ${escapeHtml(r.next)}</div>` : ''}
+      <div class="metrics">${metrics}</div>`;
+    detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  document.querySelectorAll('.cell[data-day]').forEach(el => {
+    el.addEventListener('click', () => show(parseInt(el.dataset.day, 10)));
+  });
+
+  // Auto-open the latest verified review on first load
+  const latest = [...CELLS].reverse().find(c => c.review);
+  if (latest) show(latest.n);
+</script>
+
+</Base>

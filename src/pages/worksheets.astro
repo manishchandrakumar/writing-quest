@@ -1,0 +1,118 @@
+---
+import Base from '../layouts/Base.astro';
+import days from '../data/days.json';
+
+// Slugify a theme exactly the way the existing PDF filenames are slugified
+// ("Boss · Friend Story" → "Boss_Friend_Story") so we can match on disk.
+function slug(theme) {
+  return theme
+    .replace(/[·•]/g, '')          // drop dot-style separators
+    .replace(/[^A-Za-z0-9]+/g, '_')  // non-alphanum → underscore
+    .replace(/^_+|_+$/g, '');
+}
+
+// Use Vite's glob to list PDFs that actually exist in public/worksheets/.
+// `import.meta.glob` returns module loaders; the keys are paths starting with /.
+const pdfModules = import.meta.glob('/public/worksheets/Day_*.pdf', { eager: false });
+const existingPdfs = new Set(
+  Object.keys(pdfModules).map(p => p.split('/').pop())
+);
+
+const items = days.days.map(d => {
+  const nn = String(d.n).padStart(2, '0');
+  const filename = `Day_${nn}_${slug(d.theme)}.pdf`;
+  const exists = existingPdfs.has(filename);
+  return {
+    n: d.n,
+    theme: d.theme,
+    phase: d.phase,
+    lines: d.lines,
+    boss: d.boss,
+    href: exists ? `/worksheets/${filename}` : null,
+  };
+});
+
+const byPhase = {
+  1: items.filter(i => i.phase === 1),
+  2: items.filter(i => i.phase === 2),
+  3: items.filter(i => i.phase === 3),
+};
+const existingCount = items.filter(i => i.href).length;
+const printAllExists = Object.keys(pdfModules).some(p => p.endsWith('/Print_All_Week_1.pdf'));
+---
+<Base title="Worksheets — Arnav's Writing Quest" active="worksheets">
+
+<main class="wrap single">
+  <div class="page-head">
+    <h1>Printable worksheets</h1>
+    <p class="sub">
+      {existingCount} of 60 worksheets ready · single A4 page each (warm-up · speed drill · main mission · self-check).
+      {existingCount < 60 && ` Days ${existingCount + 1}–60 are generated as Arnav approaches them.`}
+    </p>
+  </div>
+
+  {printAllExists && (
+    <p style="margin-bottom:18px;">
+      <a class="btn btn-primary" style="background:var(--green);color:#fff;box-shadow:0 4px 0 var(--green-dark);" href="/worksheets/Print_All_Week_1.pdf">📄 Print all of Week 1 (PDF)</a>
+    </p>
+  )}
+
+  <h3 class="ws-section">Phase 1 · Fluency (Days 1–20)</h3>
+  <div class="ws-list">
+    {byPhase[1].map(item => (
+      <a
+        class={`ws-card ${item.boss ? 'boss' : ''} ${item.href ? '' : 'coming'}`}
+        href={item.href || '#'}
+        aria-disabled={!item.href}
+      >
+        <span class="day-label">Day {item.n}{item.boss ? ' · BOSS' : ''}</span>
+        <span class="ws-theme">{item.theme}</span>
+        <span class="ws-meta">
+          <span>📝 {item.lines} lines</span>
+          <span>⏱ 20–25 min</span>
+        </span>
+        <span class="ws-action">{item.href ? '↓ Download PDF' : 'Coming soon'}</span>
+      </a>
+    ))}
+  </div>
+
+  <h3 class="ws-section">Phase 2 · Structure (Days 21–40)</h3>
+  <div class="ws-list">
+    {byPhase[2].map(item => (
+      <a
+        class={`ws-card ${item.boss ? 'boss' : ''} ${item.href ? '' : 'coming'}`}
+        href={item.href || '#'}
+        aria-disabled={!item.href}
+      >
+        <span class="day-label">Day {item.n}{item.boss ? ' · BOSS' : ''}</span>
+        <span class="ws-theme">{item.theme}</span>
+        <span class="ws-meta">
+          <span>📝 {item.lines} lines</span>
+          <span>⏱ 20–25 min</span>
+        </span>
+        <span class="ws-action">{item.href ? '↓ Download PDF' : 'Coming soon'}</span>
+      </a>
+    ))}
+  </div>
+
+  <h3 class="ws-section">Phase 3 · Independence (Days 41–60)</h3>
+  <div class="ws-list">
+    {byPhase[3].map(item => (
+      <a
+        class={`ws-card ${item.boss ? 'boss' : ''} ${item.href ? '' : 'coming'}`}
+        href={item.href || '#'}
+        aria-disabled={!item.href}
+      >
+        <span class="day-label">Day {item.n}{item.boss ? ' · BOSS' : ''}</span>
+        <span class="ws-theme">{item.theme}</span>
+        <span class="ws-meta">
+          <span>📝 {item.lines} lines</span>
+          <span>⏱ 20–25 min</span>
+        </span>
+        <span class="ws-action">{item.href ? '↓ Download PDF' : 'Coming soon'}</span>
+      </a>
+    ))}
+  </div>
+</main>
+
+</Base>
