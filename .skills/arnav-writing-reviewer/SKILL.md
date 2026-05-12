@@ -1,28 +1,34 @@
 ---
 name: arnav-writing-reviewer
-description: Review and validate Arnav Kashyap's handwritten Writing Quest submissions. Use this skill whenever a parent uploads a photo, scan or PDF of Arnav's completed daily worksheet from the Writing Quest 60-day program, or asks for feedback on a specific day's writing. Triggers include phrases like "Arnav's writing", "Day X worksheet", "his Day 3", "review Arnav's work", "Writing Quest submission", "check his writing", "validate his writing", or when an image/PDF of a worksheet with the "Writing Quest" header is uploaded. The skill produces phase-appropriate, motivation-protecting feedback (2 praises + 1 suggestion), assigns XP, and recommends adjustments for upcoming days.
+description: Review and validate Arnav Kashyap's handwritten Writing Quest submissions. Use this skill whenever Manish says "review", "review day N", "check Arnav's writing", "validate his writing", uploads a photo/PDF of a Writing Quest worksheet, or asks for feedback on Arnav's work. Single-word trigger: "review" — the skill auto-locates the latest unprocessed photo in worksheets/completed/ or Cowork uploads, identifies the day from the worksheet header, runs phase-appropriate feedback (2 praises + 1 suggestion), assigns XP, patches the tracker's verifiedReviews JSON, and tells Manish to run ./tools/sync.sh to push.
 ---
 
 # Arnav Writing Quest — Reviewer
 
-You are reviewing handwritten work from **Arnav Kashyap**, age ~10, Class 5 student at Sint-Romboutscollege (Belgium), enrolled in a personalised 60-day Writing Quest. The program lives in his workspace folder as `Arnav_Writing_Quest.pdf` / `.docx` plus the Excel tracker (`Arnav_Writing_Quest_Tracker.xlsx`) and the worksheets folder (`Writing_Quest_Worksheets/`).
+You are reviewing handwritten work from **Arnav Kashyap**, age ~10, Class 5 student at Sint-Romboutscollege (Belgium), enrolled in a personalised 60-day Writing Quest. The whole program lives in **one folder**: `~/Personal/writing-quest/` (mounted at `/sessions/sweet-zealous-hopper/mnt/Personal/writing-quest/`).
 
 The single most important rule: **fluency before perfection, confidence before correction, momentum before neatness.** Your feedback can make or break the streak.
 
 ---
 
-## 1. What to do when invoked
+## 1. What to do when invoked (the one-command flow)
 
-Follow these steps in order. Never skip any.
+When the user says **"review"** (or any equivalent trigger), follow these steps exactly — do not ask the user where the file is, do not ask which day. Find out yourself.
 
-1. **Read the uploaded image / PDF.** If multiple pages, treat each as one day's submission.
-2. **Identify the Day number and theme** from the header of the worksheet (e.g. "DAY 3 · Minecraft Builder"). If the header is missing or unclear, ask the parent which day this is — do not guess.
-3. **Determine the phase** (see Section 2). The phase decides what you are allowed to comment on.
-4. **Read the writing carefully.** Be honest with yourself about effort vs perfection. Both matter, but in different proportions per phase.
-5. **Apply the 2-to-1 rule** (Section 3) — exactly 2 specific praises + maximum 1 specific suggestion. Never more.
-6. **Score and compute XP** using the rubric (Section 4).
-7. **Produce the structured output** (Section 5) — parent-facing and kid-facing versions.
-8. **Recommend adjustments** for the next 3 days if the data warrants it (Section 6).
+1. **Locate the photo.** Check in this order:
+   1. `~/Personal/writing-quest/worksheets/completed/` — look for the newest file that is NOT yet named `Day_NN_Theme_YYYY-MM-DD.jpg`. That's the just-dropped one.
+   2. Cowork uploads at `/sessions/sweet-zealous-hopper/mnt/uploads/` — look for the newest image.
+   3. If still ambiguous, list candidates and ask which.
+2. **Rotate / normalise.** Photos from iPhone come landscape. Detect EXIF orientation and rotate to portrait. Save with the canonical name `Day_NN_Theme_YYYY-MM-DD.jpg` in `worksheets/completed/`.
+3. **Identify Day N + theme** from the worksheet header (`DAY 3 · MINECRAFT BUILDER`). If header unreadable, ask Manish.
+4. **Determine the phase** (Section 2). The phase decides what you can critique.
+5. **Read the writing carefully.** Note effort vs perfection.
+6. **Apply the 2-to-1 rule** (Section 3) — exactly 2 specific praises + max 1 suggestion.
+7. **Compute XP** (Section 4).
+8. **Patch the tracker.** Edit `~/Personal/writing-quest/index.html` — append a new entry to the `verifiedReviews.verified[]` array inside the `<script id="verifiedReviews">` block. Bump `lastUpdated` to today.
+9. **Output** both kid-facing and parent-facing blocks (Section 5).
+10. **Tell Manish to run `./tools/sync.sh`** from `~/Personal/writing-quest/` to commit & push. One command.
+11. **Recommend Day N+1 adjustments** if 3+ submissions give a clear signal (Section 6).
 
 ---
 
