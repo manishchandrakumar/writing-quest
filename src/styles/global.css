@@ -177,3 +177,93 @@ a { color: inherit; }
 .prose table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: 14px; }
 .prose th, .prose td { padding: 8px 10px; border-bottom: 1px solid var(--bg3); text-align: left; vertical-align: top; }
 .prose th { background: var(--bg2); font-weight: 900; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; color: var(--ink2); }
+
+/* ============================================================
+ * v2 surfaces — Reviews heatmap, Worksheets list, Parent dashboard, Gallery
+ * ============================================================ */
+
+.page-head { margin-bottom: 20px; }
+.page-head h1 { font-size: 30px; font-weight: 900; line-height: 1.1; }
+.page-head .sub { color: var(--ink2); font-weight: 700; margin-top: 6px; font-size: 14px; }
+
+/* --- Reviews heatmap --- */
+.heatmap { display: grid; grid-template-columns: repeat(10, 1fr); gap: 8px; }
+@media (max-width: 600px) { .heatmap { grid-template-columns: repeat(6, 1fr); } }
+.cell { aspect-ratio: 1; border-radius: 10px; background: var(--bg2); border: 2px solid var(--bg3); display: flex; align-items: center; justify-content: center; flex-direction: column; font-weight: 900; color: var(--ink3); cursor: pointer; transition: transform 0.08s; position: relative; }
+.cell .day-num { font-size: 14px; line-height: 1; }
+.cell .day-xp { font-size: 9px; font-weight: 800; margin-top: 2px; opacity: 0.7; }
+.cell:hover { transform: translateY(-2px); }
+.cell.empty { cursor: default; }
+.cell.empty:hover { transform: none; }
+.cell.done { background: var(--green); color: #fff; border-color: var(--green-dark); }
+.cell.done.boss { background: linear-gradient(135deg, var(--red) 0%, #FF6B6B 100%); border-color: var(--red-dark); }
+.cell.done::after { content: "✓"; position: absolute; top: -4px; right: -4px; background: #fff; color: var(--green-dark); width: 16px; height: 16px; border-radius: 50%; font-size: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 0 rgba(0,0,0,.1); }
+.cell.done.boss::after { color: var(--red-dark); }
+.cell.future { background: var(--bg2); border-style: dashed; }
+.cell.boss-future { border-color: var(--red); color: var(--red); }
+.cell.boss-future::before { content: "⚔"; position: absolute; top: -8px; left: -4px; font-size: 12px; background: var(--gold); color: #fff; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 0 var(--gold-dark); }
+
+.legend { display: flex; gap: 18px; flex-wrap: wrap; margin: 16px 0 24px; font-size: 12px; color: var(--ink2); font-weight: 700; }
+.legend .sw { display: inline-block; width: 14px; height: 14px; border-radius: 4px; vertical-align: middle; margin-right: 6px; border: 2px solid var(--bg3); }
+.legend .sw.done { background: var(--green); border-color: var(--green-dark); }
+.legend .sw.boss { background: linear-gradient(135deg, var(--red), #FF6B6B); border-color: var(--red-dark); }
+.legend .sw.future { background: var(--bg2); border-style: dashed; }
+
+/* --- Review detail card (modal-ish) --- */
+.review-detail { background: #fff; border-radius: 18px; padding: 24px; margin-top: 24px; border: 2px solid var(--bg2); }
+.review-detail .hd { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+.review-detail h2 { font-size: 22px; font-weight: 900; color: var(--green-dark); }
+.review-detail .phase-pill { font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 999px; background: var(--bg2); color: var(--ink2); text-transform: uppercase; letter-spacing: 0.5px; }
+.review-detail .praises { margin: 16px 0; display: flex; flex-direction: column; gap: 10px; }
+.review-detail .praises p { background: var(--green-bg); border-left: 4px solid var(--green); padding: 12px 14px; border-radius: 8px; font-size: 14px; line-height: 1.4; }
+.review-detail .next-up { background: var(--bg2); padding: 12px 14px; border-radius: 8px; font-size: 14px; font-style: italic; color: var(--ink); border-left: 4px solid var(--blue); }
+.review-detail .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-top: 16px; }
+.review-detail .metric { background: var(--bg2); border-radius: 10px; padding: 10px; text-align: center; }
+.review-detail .metric .v { font-size: 20px; font-weight: 900; color: var(--ink); }
+.review-detail .metric .l { font-size: 10px; color: var(--ink2); font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+
+/* --- Worksheets list --- */
+.ws-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+.ws-card { background: #fff; border: 2px solid var(--bg2); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 6px; transition: transform 0.08s; text-decoration: none; color: var(--ink); }
+.ws-card:hover { transform: translateY(-2px); border-color: var(--green-dark); }
+.ws-card .day-label { font-size: 11px; font-weight: 900; color: var(--green-dark); text-transform: uppercase; letter-spacing: 0.5px; }
+.ws-card .ws-theme { font-size: 16px; font-weight: 900; color: var(--ink); }
+.ws-card .ws-meta { font-size: 12px; color: var(--ink2); font-weight: 700; display: flex; gap: 10px; flex-wrap: wrap; }
+.ws-card .ws-action { margin-top: 6px; font-size: 12px; font-weight: 900; color: var(--green-dark); text-transform: uppercase; letter-spacing: 0.5px; }
+.ws-card.boss { border-color: var(--red); }
+.ws-card.boss .day-label { color: var(--red-dark); }
+.ws-card.coming { opacity: 0.55; pointer-events: none; }
+.ws-card.coming .ws-action { color: var(--ink3); }
+.ws-section { font-size: 13px; font-weight: 900; color: var(--ink2); text-transform: uppercase; letter-spacing: 1px; margin: 24px 0 12px; }
+.ws-section:first-of-type { margin-top: 8px; }
+
+/* --- Gallery --- */
+.gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; }
+.gallery-card { background: #fff; border: 2px solid var(--bg2); border-radius: 14px; overflow: hidden; cursor: pointer; transition: transform 0.08s; }
+.gallery-card:hover { transform: translateY(-2px); border-color: var(--green-dark); }
+.gallery-card img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; display: block; background: var(--bg2); }
+.gallery-card .cap { padding: 10px 12px; }
+.gallery-card .cap .day { font-size: 12px; font-weight: 900; color: var(--green-dark); text-transform: uppercase; letter-spacing: 0.5px; }
+.gallery-card .cap .theme { font-size: 14px; font-weight: 800; color: var(--ink); margin-top: 2px; }
+.gallery-empty { background: var(--bg2); border-radius: 14px; padding: 40px 20px; text-align: center; color: var(--ink2); font-weight: 700; }
+
+/* --- Lightbox (gallery click) --- */
+.lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px; cursor: pointer; }
+.lightbox.open { display: flex; }
+.lightbox img { max-width: 100%; max-height: 90vh; border-radius: 10px; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+.lightbox-cap { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); color: #fff; font-weight: 800; background: rgba(0,0,0,0.5); padding: 8px 16px; border-radius: 999px; font-size: 13px; }
+
+/* --- Parent dashboard --- */
+.dash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.dash-card { background: #fff; border: 2px solid var(--bg2); border-radius: 14px; padding: 18px; }
+.dash-card h3 { font-size: 12px; font-weight: 900; color: var(--ink2); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+.dash-card .big-n { font-size: 36px; font-weight: 900; color: var(--ink); line-height: 1; }
+.dash-card .big-n + .lbl { font-size: 13px; color: var(--ink2); font-weight: 700; margin-top: 4px; }
+.dash-card.chart-card { grid-column: 1 / -1; }
+.dash-card.chart-card .chart-wrap { position: relative; height: 220px; }
+.dash-trend { display: flex; gap: 4px; align-items: flex-end; margin-top: 12px; height: 60px; }
+.dash-trend .bar { flex: 1; background: var(--green); border-radius: 3px 3px 0 0; min-height: 4px; }
+.dash-trend .bar.partial { background: var(--orange); }
+.dash-trend .bar.empty { background: var(--bg3); }
+
+.empty-state { background: var(--bg2); border-radius: 14px; padding: 30px 20px; text-align: center; color: var(--ink2); font-weight: 700; font-size: 14px; }

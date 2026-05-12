@@ -14,6 +14,10 @@ dist/
 .astro/
 .cache/
 
+# Local agent scratch (not part of the project)
+.playwright-mcp/
+.claude/
+
 # Raw iPhone exports — only the canonical Day_NN_Theme_YYYY-MM-DD.jpg files
 # (renamed by the reviewer skill) are committed. IMG_*.jpg stays out.
 **/IMG_*.jpeg
