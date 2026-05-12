@@ -1,0 +1,16 @@
+# Cloudflare Pages headers — applied automatically on deploy
+# https://developers.cloudflare.com/pages/configuration/headers/
+
+/*
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+# Long cache for the worksheet PDFs — they don't change once printed
+/worksheets/*
+  Cache-Control: public, max-age=604800, immutable
+
+# Short cache on the tracker — verified reviews update frequently
+/index.html
+  Cache-Control: public, max-age=300, must-revalidate

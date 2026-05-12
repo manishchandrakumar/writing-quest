@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arnav's Writing Quest</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --green:#58CC02; --green-dark:#58A700; --green-bg:#D7FFB8;
+  --orange:#FF9600; --orange-dark:#E08600;
+  --gold:#FFC800; --gold-dark:#E5B100;
+  --red:#FF4B4B; --red-dark:#EA2B2B;
+  --blue:#1CB0F6; --blue-dark:#0A91D1;
+  --purple:#CE82FF; --purple-dark:#A560E8;
+  --ink:#3C3C3C; --ink2:#777; --ink3:#AFAFAF;
+  --bg:#FFFFFF; --bg2:#F7F7F7; --bg3:#E5E5E5;
+  --shadow: 0 4px 0 rgba(0,0,0,0.1);
+  --shadow-press: 0 2px 0 rgba(0,0,0,0.1);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{font-family:'Nunito',system-ui,-apple-system,sans-serif;color:var(--ink);background:var(--bg);min-height:100vh;}
+body{display:flex;flex-direction:column;}
+img{max-width:100%}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+button:focus{outline:none}
+
+/* --- Top bar --- */
+.topbar{position:sticky;top:0;background:#fff;border-bottom:2px solid var(--bg2);z-index:100;padding:14px 20px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;}
+.brand{display:flex;align-items:center;gap:10px;font-weight:900;font-size:20px;color:var(--ink);text-decoration:none;}
+.brand .owl{width:34px;height:34px;flex:0 0 34px;}
+.brand .name{display:flex;flex-direction:column;line-height:1.1;}
+.brand .sub{font-size:11px;color:var(--green);font-weight:800;letter-spacing:1px;text-transform:uppercase;}
+
+.stat-pills{margin-left:auto;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.pill{display:flex;align-items:center;gap:6px;font-weight:900;font-size:16px;color:var(--ink);}
+.pill .icon{width:22px;height:22px;}
+
+/* --- Main layout --- */
+.wrap{max-width:1100px;width:100%;margin:0 auto;padding:24px 20px 80px;display:grid;grid-template-columns:1fr 320px;gap:24px;}
+@media(max-width:900px){.wrap{grid-template-columns:1fr;}.side{order:2}}
+
+/* --- Hero card (Today's mission) --- */
+.hero{background:linear-gradient(135deg,var(--green) 0%,#7DDB1F 100%);border-radius:20px;padding:24px;color:#fff;box-shadow:var(--shadow);position:relative;overflow:hidden;}
+.hero::before{content:"";position:absolute;right:-40px;top:-40px;width:200px;height:200px;background:rgba(255,255,255,.1);border-radius:50%;}
+.hero::after{content:"";position:absolute;right:40px;bottom:-60px;width:120px;height:120px;background:rgba(255,255,255,.08);border-radius:50%;}
+.hero .label{font-size:12px;font-weight:900;letter-spacing:1px;text-transform:uppercase;opacity:.85;position:relative;}
+.hero .title{font-size:28px;font-weight:900;margin:4px 0 2px;position:relative;}
+.hero .theme{font-size:15px;font-weight:700;opacity:.92;position:relative;}
+.hero .prompt{background:rgba(255,255,255,.18);border-radius:14px;padding:14px 16px;margin-top:16px;font-weight:700;line-height:1.4;font-size:15px;position:relative;}
+.hero .meta{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px;position:relative;}
+.chip{background:rgba(255,255,255,.22);padding:6px 12px;border-radius:999px;font-size:13px;font-weight:800;}
+.hero .cta{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;position:relative;}
+.btn{font-weight:900;padding:14px 22px;border-radius:14px;letter-spacing:.5px;text-transform:uppercase;font-size:14px;transition:transform .08s;display:inline-flex;align-items:center;gap:8px;}
+.btn:active{transform:translateY(2px);}
+.btn-primary{background:#fff;color:var(--green-dark);box-shadow:0 4px 0 rgba(0,0,0,.18);}
+.btn-primary:hover{background:#FFFFEE;}
+.btn-ghost{background:rgba(0,0,0,.15);color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.18);}
+.btn-ghost:hover{background:rgba(0,0,0,.22);}
+.btn-orange{background:var(--orange);color:#fff;box-shadow:0 4px 0 var(--orange-dark);}
+.btn-orange:hover{filter:brightness(1.05);}
+.btn-blue{background:var(--blue);color:#fff;box-shadow:0 4px 0 var(--blue-dark);}
+
+/* --- Phase tabs --- */
+.phase-tabs{display:flex;gap:10px;margin:24px 0 12px;flex-wrap:wrap;}
+.tab{background:#fff;border:2px solid var(--bg3);padding:8px 14px;border-radius:999px;font-weight:900;font-size:13px;color:var(--ink2);cursor:pointer;}
+.tab.active{background:var(--green);color:#fff;border-color:var(--green-dark);box-shadow:0 3px 0 var(--green-dark);}
+
+/* --- Path of days (Duolingo lesson path) --- */
+.path{display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:14px;background:var(--bg2);padding:18px;border-radius:18px;}
+.node{aspect-ratio:1;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;font-weight:900;color:var(--ink3);position:relative;cursor:pointer;box-shadow:0 4px 0 var(--bg3);transition:transform .1s;border:3px solid var(--bg3);}
+.node:hover{transform:translateY(-2px);}
+.node .n{font-size:18px;line-height:1;}
+.node .lbl{font-size:9px;text-transform:uppercase;letter-spacing:.5px;margin-top:2px;}
+.node.unlocked{color:var(--green-dark);border-color:var(--green-dark);box-shadow:0 4px 0 var(--green-dark);}
+.node.done{background:var(--green);color:#fff;border-color:var(--green-dark);box-shadow:0 4px 0 var(--green-dark);}
+.node.done::after{content:"✓";position:absolute;top:-6px;right:-6px;background:#fff;color:var(--green-dark);width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 0 var(--green-dark);}
+.node.today{background:var(--gold);color:#fff;border-color:var(--gold-dark);box-shadow:0 4px 0 var(--gold-dark);animation:pulse 1.5s infinite;}
+@keyframes pulse{0%{box-shadow:0 4px 0 var(--gold-dark),0 0 0 0 rgba(255,200,0,.6);}70%{box-shadow:0 4px 0 var(--gold-dark),0 0 0 14px rgba(255,200,0,0);}100%{box-shadow:0 4px 0 var(--gold-dark),0 0 0 0 rgba(255,200,0,0);}}
+.node.boss{background:linear-gradient(135deg,var(--red) 0%,#FF6B6B 100%);color:#fff;border-color:var(--red-dark);box-shadow:0 4px 0 var(--red-dark);}
+.node.boss .lbl{font-weight:900;}
+.node.boss::before{content:"⚔";position:absolute;top:-8px;left:-4px;background:var(--gold);color:#fff;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;box-shadow:0 2px 0 var(--gold-dark);}
+.node.locked{cursor:not-allowed;opacity:.7;}
+.node.locked .n{filter:blur(.5px);}
+
+/* --- Card --- */
+.card{background:#fff;border:2px solid var(--bg2);border-radius:18px;padding:18px 20px;}
+.card h3{font-size:16px;font-weight:900;text-transform:uppercase;letter-spacing:1px;color:var(--ink2);display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+.card h3 .dot{width:10px;height:10px;border-radius:50%;background:var(--green);}
+
+/* --- Side rail --- */
+.side{display:flex;flex-direction:column;gap:18px;}
+.streak-card{background:#fff;border-radius:18px;padding:18px;text-align:center;border:2px solid var(--bg2);}
+.streak-flame{font-size:80px;line-height:1;display:inline-block;filter:drop-shadow(0 6px 0 rgba(255,140,0,.25));}
+.streak-flame.cold{filter:grayscale(1);opacity:.5;}
+.streak-n{font-size:48px;font-weight:900;color:var(--orange);line-height:1;margin-top:6px;}
+.streak-lbl{font-size:13px;color:var(--ink2);font-weight:800;text-transform:uppercase;letter-spacing:1.5px;margin-top:4px;}
+.streak-sub{margin-top:10px;font-size:13px;color:var(--ink2);font-weight:700;}
+
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.stat-box{background:#fff;border:2px solid var(--bg2);border-radius:14px;padding:12px;text-align:center;}
+.stat-box .v{font-size:22px;font-weight:900;color:var(--ink);}
+.stat-box .l{font-size:11px;color:var(--ink2);font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-top:2px;}
+
+/* --- Level card --- */
+.level-card{background:linear-gradient(135deg,var(--purple) 0%,#E6A8FF 100%);border-radius:18px;padding:18px;color:#fff;text-align:center;box-shadow:var(--shadow);}
+.level-card .level-num{font-size:42px;font-weight:900;line-height:1;}
+.level-card .level-title{font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:1px;margin-top:4px;}
+.xp-bar{background:rgba(255,255,255,.25);border-radius:999px;height:14px;margin-top:12px;overflow:hidden;}
+.xp-fill{background:#fff;height:100%;border-radius:999px;transition:width .6s ease;}
+.xp-text{margin-top:8px;font-size:13px;font-weight:800;}
+
+/* --- Badges --- */
+.badges{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.badge{aspect-ratio:1;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;background:var(--bg2);color:var(--ink3);position:relative;text-align:center;padding:4px;}
+.badge.earned{background:linear-gradient(135deg,var(--gold) 0%,#FFE066 100%);color:#7A5700;box-shadow:0 4px 0 var(--gold-dark);}
+.badge .emoji{font-size:22px;line-height:1;}
+.badge .name{font-size:8px;text-transform:uppercase;font-weight:900;letter-spacing:.5px;margin-top:2px;line-height:1.1;}
+
+/* --- Verified review --- */
+.reviews-list{display:flex;flex-direction:column;gap:10px;}
+.review-item{background:var(--bg2);border-radius:12px;padding:12px 14px;border-left:4px solid var(--green);}
+.review-item .head{display:flex;justify-content:space-between;align-items:center;}
+.review-item .day{font-weight:900;color:var(--green-dark);font-size:14px;}
+.review-item .xp{background:var(--gold);color:#7A5700;font-weight:900;font-size:12px;padding:3px 10px;border-radius:999px;}
+.review-item .praise{font-size:13px;color:var(--ink);margin-top:6px;line-height:1.4;}
+.review-item .praise b{color:var(--green-dark);}
+.review-item .next{font-size:12px;color:var(--ink2);margin-top:6px;font-style:italic;}
+
+/* --- Modal --- */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:1000;opacity:0;pointer-events:none;transition:opacity .2s;padding:20px;}
+.modal-bg.open{opacity:1;pointer-events:auto;}
+.modal{background:#fff;border-radius:20px;padding:24px;max-width:480px;width:100%;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.3);transform:scale(.92);transition:transform .25s cubic-bezier(.34,1.56,.64,1);}
+.modal-bg.open .modal{transform:scale(1);}
+.modal h2{font-size:24px;font-weight:900;margin-bottom:8px;}
+.modal p{font-size:15px;color:var(--ink2);font-weight:700;line-height:1.4;}
+.modal .big-icon{font-size:64px;margin:8px 0;}
+.modal .actions{display:flex;gap:10px;justify-content:center;margin-top:16px;flex-wrap:wrap;}
+
+/* --- Footer note --- */
+.footnote{text-align:center;color:var(--ink3);font-size:12px;margin-top:24px;font-weight:700;}
+.footnote a{color:var(--green-dark);text-decoration:none;font-weight:900;}
+
+/* --- Confetti --- */
+.confetti{position:fixed;width:10px;height:14px;top:-20px;pointer-events:none;z-index:999;border-radius:2px;}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--ink);color:#fff;padding:14px 22px;border-radius:14px;font-weight:900;z-index:1500;opacity:0;transition:all .3s;}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+</style>
+</head>
+<body>
+
+<!-- ========== TOP BAR ========== -->
+<header class="topbar">
+  <a class="brand" href="#">
+    <svg class="owl" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <!-- Friendly green owl mascot -->
+      <ellipse cx="32" cy="40" rx="22" ry="20" fill="#58CC02"/>
+      <ellipse cx="32" cy="40" rx="18" ry="16" fill="#7DDB1F"/>
+      <circle cx="22" cy="34" r="10" fill="#fff"/>
+      <circle cx="42" cy="34" r="10" fill="#fff"/>
+      <circle cx="22" cy="35" r="5" fill="#3C3C3C"/>
+      <circle cx="42" cy="35" r="5" fill="#3C3C3C"/>
+      <circle cx="24" cy="33" r="1.5" fill="#fff"/>
+      <circle cx="44" cy="33" r="1.5" fill="#fff"/>
+      <polygon points="32,38 28,42 36,42" fill="#FFC800"/>
+      <path d="M14 24 Q18 14 24 18" stroke="#58A700" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M50 24 Q46 14 40 18" stroke="#58A700" stroke-width="3" fill="none" stroke-linecap="round"/>
+    </svg>
+    <span class="name">
+      <span>Arnav's Writing Quest</span>
+      <span class="sub">60-Day Challenge</span>
+    </span>
+  </a>
+  <div class="stat-pills">
+    <div class="pill" title="Streak">
+      <span style="font-size:22px">🔥</span><span id="topStreak">0</span>
+    </div>
+    <div class="pill" title="Total XP" style="color:var(--gold-dark)">
+      <span style="font-size:22px">💎</span><span id="topXp">0</span>
+    </div>
+    <div class="pill" title="Level" style="color:var(--purple-dark)">
+      <span style="font-size:22px">🏅</span><span id="topLevel">1</span>
+    </div>
+  </div>
+</header>
+
+<!-- ========== MAIN ========== -->
+<main class="wrap">
+
+  <section class="main-col">
+    <!-- Hero / Today's mission -->
+    <div class="hero" id="heroCard">
+      <div class="label">Today's Mission</div>
+      <div class="title" id="heroDayTitle">Day 1 — Mission Start</div>
+      <div class="theme" id="heroPhase">Phase 1 · Fluency · Target 3 lines</div>
+      <div class="prompt" id="heroPrompt">Loading…</div>
+      <div class="meta">
+        <span class="chip" id="heroTime">⏱ 20–25 min</span>
+        <span class="chip" id="heroLines">📝 3 lines</span>
+        <span class="chip" id="heroXp">+10 XP base</span>
+      </div>
+      <div class="cta">
+        <button class="btn btn-primary" id="btnStart">Start mission</button>
+        <button class="btn btn-ghost" id="btnDone">I finished ✓</button>
+        <button class="btn btn-ghost" id="btnLite">Lite day (5 min)</button>
+      </div>
+    </div>
+
+    <!-- Phase tabs + path -->
+    <div class="phase-tabs">
+      <button class="tab active" data-phase="1">Phase 1 · Fluency (1–20)</button>
+      <button class="tab" data-phase="2">Phase 2 · Structure (21–40)</button>
+      <button class="tab" data-phase="3">Phase 3 · Independence (41–60)</button>
+    </div>
+
+    <div class="card">
+      <h3><span class="dot"></span> The Path</h3>
+      <div class="path" id="pathGrid"></div>
+    </div>
+
+    <!-- XP chart -->
+    <div class="card" style="margin-top:18px">
+      <h3><span class="dot" style="background:var(--gold-dark)"></span> XP over time</h3>
+      <div style="position:relative;height:200px"><canvas id="xpChart"></canvas></div>
+    </div>
+
+    <!-- Reviews from Claude -->
+    <div class="card" style="margin-top:18px">
+      <h3><span class="dot" style="background:var(--blue)"></span> Coach's verified reviews</h3>
+      <div class="reviews-list" id="reviewsList"></div>
+    </div>
+  </section>
+
+  <aside class="side">
+    <!-- Streak -->
+    <div class="streak-card">
+      <span class="streak-flame" id="streakFlame">🔥</span>
+      <div class="streak-n" id="streakN">0</div>
+      <div class="streak-lbl">Day streak</div>
+      <div class="streak-sub" id="streakSub">Start today to light it up</div>
+    </div>
+
+    <!-- Level -->
+    <div class="level-card">
+      <div style="font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:2px;opacity:.85">Level</div>
+      <div class="level-num" id="levelNum">1</div>
+      <div class="level-title" id="levelTitle">Pencil Apprentice</div>
+      <div class="xp-bar"><div class="xp-fill" id="xpFill" style="width:0%"></div></div>
+      <div class="xp-text" id="xpText">0 / 60 XP</div>
+    </div>
+
+    <!-- Stats -->
+    <div class="card">
+      <h3><span class="dot" style="background:var(--blue)"></span> Stats</h3>
+      <div class="stats-grid">
+        <div class="stat-box"><div class="v" id="statXp">0</div><div class="l">Total XP</div></div>
+        <div class="stat-box"><div class="v" id="statDone">0</div><div class="l">Missions done</div></div>
+        <div class="stat-box"><div class="v" id="statBest">0</div><div class="l">Best streak</div></div>
+        <div class="stat-box"><div class="v" id="statWords">0</div><div class="l">Spell words</div></div>
+      </div>
+    </div>
+
+    <!-- Badges -->
+    <div class="card">
+      <h3><span class="dot" style="background:var(--gold-dark)"></span> Badges</h3>
+      <div class="badges" id="badgeGrid"></div>
+    </div>
+
+    <!-- Reset button (tiny) -->
+    <div style="text-align:center"><button onclick="if(confirm('Reset local progress? Coach reviews stay.')){localStorage.removeItem('arnav_quest_v1');location.reload();}" style="background:none;color:var(--ink3);font-size:11px;font-weight:700;text-decoration:underline;padding:4px;">Reset my progress</button></div>
+  </aside>
+</main>
+
+<p class="footnote">Designed for Arnav · Powered by his streak energy 🔥 · Coach reviews refresh whenever Manish uploads a worksheet.</p>
+
+<!-- ========== MODAL ========== -->
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <div class="big-icon" id="modalIcon">🎉</div>
+    <h2 id="modalTitle">Mission complete!</h2>
+    <p id="modalBody"></p>
+    <div class="actions">
+      <button class="btn btn-primary" style="background:var(--green);color:#fff;box-shadow:0 4px 0 var(--green-dark)" onclick="closeModal()">Awesome!</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ========== EMBEDDED DATA (Claude updates this section between sessions) ========== -->
+<script id="verifiedReviews" type="application/json">
+{
+  "lastUpdated": "2026-05-11",
+  "updatedBy": "Coach Claude",
+  "verified": [
+    {
+      "day": 1,
+      "theme": "Mission Start",
+      "xp": 15,
+      "lang": "nl",
+      "praises": [
+        "You smashed your target — 7 lines on a 3-line mission. More than DOUBLE.",
+        "You explained Dueling Grounds like a real reviewer: what it is, how weapons + coins work, AND why you love it (\"ik ben er heel goed in\"). Pro structure."
+      ],
+      "next": "Same energy on Day 2 — see if you can finish even faster than 14 minutes."
+    }
+  ]
+}
+</script>
+
+<script id="dayData" type="application/json">
+{"days": [
+  {"n":1,"theme":"Mission Start","phase":1,"lines":3,"boss":false,"prompt":"Write 3 lines about your favourite Roblox game. What is it called and why do you love it?"},
+  {"n":2,"theme":"Friends Mode","phase":1,"lines":4,"boss":false,"prompt":"Write 4 lines about your best moment with Arsh or Varad."},
+  {"n":3,"theme":"Minecraft Builder","phase":1,"lines":5,"boss":false,"prompt":"List 5 things to build in Minecraft. Then write 5 lines on how to build one."},
+  {"n":4,"theme":"Story Spark","phase":1,"lines":5,"boss":false,"prompt":"Continue: 'The hero opened the secret door and saw…' (5 lines)"},
+  {"n":5,"theme":"Speed Day","phase":1,"lines":5,"boss":false,"prompt":"Your dream YouTube channel — name, topic, first video."},
+  {"n":6,"theme":"Free Pick","phase":1,"lines":6,"boss":false,"prompt":"Pick ANY topic today. 6 lines."},
+  {"n":7,"theme":"Week 1 Wrap","phase":1,"lines":7,"boss":false,"prompt":"Three things I learned about myself this week."},
+  {"n":8,"theme":"Spelling Sneak-In","phase":1,"lines":6,"boss":false,"prompt":"Use these 5 words in a 6-line story: because, friend, school, before, every."},
+  {"n":9,"theme":"Continuous Flow","phase":1,"lines":7,"boss":false,"prompt":"3-min non-stop flow + 'If I were principal for a day…' (6–7 lines)."},
+  {"n":10,"theme":"Boss · Friend Story","phase":1,"lines":10,"boss":true,"prompt":"BOSS: 10-line story — 'The Day Arsh, Varad and I Saved the School.'"},
+  {"n":11,"theme":"Game Day","phase":1,"lines":7,"boss":false,"prompt":"Compare Roblox and Minecraft. Which would you pick if you could only have one?"},
+  {"n":12,"theme":"Speed Beat","phase":1,"lines":7,"boss":false,"prompt":"Speed challenge + 7 lines about: 'The fastest thing I've ever done.'"},
+  {"n":13,"theme":"YouTube Mode","phase":1,"lines":7,"boss":false,"prompt":"Write a 7-line video script intro for your dream channel."},
+  {"n":14,"theme":"Family Fun","phase":1,"lines":8,"boss":false,"prompt":"Best family moment from this month. 8 lines."},
+  {"n":15,"theme":"Story Opener","phase":1,"lines":8,"boss":false,"prompt":"Write the opening of an adventure story. Hook the reader in 8 lines."},
+  {"n":16,"theme":"Idea Forge","phase":1,"lines":8,"boss":false,"prompt":"Invent a new game. Name, players, rules. 8 lines."},
+  {"n":17,"theme":"Doctor Binocs","phase":1,"lines":8,"boss":false,"prompt":"Explain Minecraft like Doctor Binocs would. 8 lines."},
+  {"n":18,"theme":"Friends Story","phase":1,"lines":9,"boss":false,"prompt":"A short story where Arsh, Varad and you discover a secret. 9 lines."},
+  {"n":19,"theme":"Reflection","phase":1,"lines":9,"boss":false,"prompt":"What is the best thing about being in Class 5?"},
+  {"n":20,"theme":"Boss · Phase 1 Final","phase":1,"lines":12,"boss":true,"prompt":"BOSS: Choose any Day 1–19 prompt and rewrite it better, longer, sharper. 12 lines."},
+  {"n":21,"theme":"Paragraph 101","phase":2,"lines":10,"boss":false,"prompt":"Write one paragraph: topic sentence → 3 ideas → closing sentence. Topic: weekends."},
+  {"n":22,"theme":"Topic = School","phase":2,"lines":10,"boss":false,"prompt":"One paragraph about a school memory. Use the topic → ideas → close shape."},
+  {"n":23,"theme":"Topic = Food","phase":2,"lines":10,"boss":false,"prompt":"One paragraph: your perfect meal. Describe taste, smell and why."},
+  {"n":24,"theme":"Topic = Friends","phase":2,"lines":10,"boss":false,"prompt":"One paragraph: why Arsh or Varad is a great friend."},
+  {"n":25,"theme":"Topic = Belgium","phase":2,"lines":11,"boss":false,"prompt":"One paragraph: describe Mechelen to someone who's never visited."},
+  {"n":26,"theme":"Connectors","phase":2,"lines":11,"boss":false,"prompt":"Use these connectors in your paragraph: and, but, then, so, because."},
+  {"n":27,"theme":"Topic = Gaming","phase":2,"lines":11,"boss":false,"prompt":"One paragraph explaining your Roblox / Minecraft strategy."},
+  {"n":28,"theme":"Spelling Sprint","phase":2,"lines":11,"boss":false,"prompt":"Paragraph using 5 spell-bank words: important, together, between, through, around."},
+  {"n":29,"theme":"Topic = Hero","phase":2,"lines":12,"boss":false,"prompt":"Paragraph about a hero (real or fictional) and why you admire them."},
+  {"n":30,"theme":"Boss · Halfway Hero","phase":2,"lines":14,"boss":true,"prompt":"BOSS: Two short paragraphs explaining how YOU would teach writing to a younger kid."},
+  {"n":31,"theme":"Explain Mode","phase":2,"lines":12,"boss":false,"prompt":"Explain why teamwork matters in 2 paragraphs."},
+  {"n":32,"theme":"Two-Paragraph Pop","phase":2,"lines":12,"boss":false,"prompt":"Paragraph 1: describe a thing you love. Paragraph 2: why it matters."},
+  {"n":33,"theme":"Class 5 Diary","phase":2,"lines":12,"boss":false,"prompt":"Write a 2-paragraph diary entry about a recent school day."},
+  {"n":34,"theme":"Spell Bank +5","phase":2,"lines":12,"boss":false,"prompt":"Use 5 new spell words in a 12-line paragraph: carefully, suddenly, finally, probably, certainly."},
+  {"n":35,"theme":"Connectors Plus","phase":2,"lines":13,"boss":false,"prompt":"Use 5 connectors: although, however, because, while, also."},
+  {"n":36,"theme":"Explain Binocs","phase":2,"lines":13,"boss":false,"prompt":"Explain how the internet works in 2 paragraphs (Binocs-style)."},
+  {"n":37,"theme":"Compare Mode","phase":2,"lines":13,"boss":false,"prompt":"Compare summer and winter holidays in 2 paragraphs."},
+  {"n":38,"theme":"Family Story","phase":2,"lines":13,"boss":false,"prompt":"A funny family memory in 2 paragraphs."},
+  {"n":39,"theme":"Mini Essay","phase":2,"lines":14,"boss":false,"prompt":"2 paragraphs: 'Why I am proud of myself this month.'"},
+  {"n":40,"theme":"Boss · Phase 2 Final","phase":2,"lines":16,"boss":true,"prompt":"BOSS: Explain Roblox or Minecraft to an alien in 2 paragraphs."},
+  {"n":41,"theme":"Timed Writing","phase":3,"lines":14,"boss":false,"prompt":"10-min timer. Write 2 paragraphs about an exciting weekend."},
+  {"n":42,"theme":"Opinion Start","phase":3,"lines":14,"boss":false,"prompt":"Your opinion: should kids have more or less homework? 1 paragraph + reasons."},
+  {"n":43,"theme":"Class 5 Wisdom","phase":3,"lines":14,"boss":false,"prompt":"What 3 things should every new Class 5 student know?"},
+  {"n":44,"theme":"Timed 2","phase":3,"lines":14,"boss":false,"prompt":"10-min timer. 'My most surprising day.'"},
+  {"n":45,"theme":"Opinion + Example","phase":3,"lines":14,"boss":false,"prompt":"Opinion: 'Phones in school — yes or no?' Use 2 reasons + 1 example."},
+  {"n":46,"theme":"Compare Mode","phase":3,"lines":15,"boss":false,"prompt":"Compare two YouTubers you like. Strengths, style, why you watch."},
+  {"n":47,"theme":"Story Climax","phase":3,"lines":15,"boss":false,"prompt":"Write the climax scene of a story (where everything peaks)."},
+  {"n":48,"theme":"Reflection","phase":3,"lines":15,"boss":false,"prompt":"Looking back at Day 1, what's changed about you?"},
+  {"n":49,"theme":"Timed 3","phase":3,"lines":15,"boss":false,"prompt":"10-min timer. 'The best decision I ever made.'"},
+  {"n":50,"theme":"Boss · Opinion Duel","phase":3,"lines":18,"boss":true,"prompt":"BOSS: 'Phones in school — yes or no?' Full opinion piece with 2 reasons + 1 example."},
+  {"n":51,"theme":"Class 6 Style","phase":3,"lines":16,"boss":false,"prompt":"Write like Class 6: book review of any book/comic. 3 paragraphs."},
+  {"n":52,"theme":"Class 6 Style 2","phase":3,"lines":16,"boss":false,"prompt":"Summarise a Doctor Binocs episode in 3 paragraphs."},
+  {"n":53,"theme":"Self-Portrait","phase":3,"lines":16,"boss":false,"prompt":"Describe yourself in 3 paragraphs as if writing to your future self."},
+  {"n":54,"theme":"Story Long","phase":3,"lines":17,"boss":false,"prompt":"A complete short story: beginning, middle, end. Full page."},
+  {"n":55,"theme":"Opinion Final","phase":3,"lines":17,"boss":false,"prompt":"Opinion: 'What's the best subject in school?' Full piece with 3 reasons."},
+  {"n":56,"theme":"Polish Mode","phase":3,"lines":17,"boss":false,"prompt":"Re-read Day 54. Rewrite it shorter, sharper, better."},
+  {"n":57,"theme":"Class 6 Prep 1","phase":3,"lines":18,"boss":false,"prompt":"Full one-page piece: 'A day in my life at age 25.'"},
+  {"n":58,"theme":"Class 6 Prep 2","phase":3,"lines":18,"boss":false,"prompt":"Full one-page piece: 'The most important thing I learned this year.'"},
+  {"n":59,"theme":"Class 6 Prep 3","phase":3,"lines":18,"boss":false,"prompt":"Full one-page piece: 'Three things I want to do in Class 6.'"},
+  {"n":60,"theme":"Boss · Grand Final","phase":3,"lines":20,"boss":true,"prompt":"GRAND FINAL: 'How I became a writer in 60 days.' Full one-page piece."}
+]}
+</script>
+
+<script>
+// ========= State & helpers =========
+const STORAGE_KEY = 'arnav_quest_v1';
+const START_DATE_KEY = 'arnav_quest_start';
+
+const DAYS = JSON.parse(document.getElementById('dayData').textContent).days;
+const VERIFIED = JSON.parse(document.getElementById('verifiedReviews').textContent);
+
+const LEVELS = [
+  {min:0,    name:"Pencil Apprentice",  next:60   },
+  {min:60,   name:"Word Cadet",         next:180  },
+  {min:180,  name:"Sentence Knight",    next:350  },
+  {min:350,  name:"Paragraph Mage",     next:550  },
+  {min:550,  name:"Spelling Sentinel",  next:800  },
+  {min:800,  name:"Story Captain",      next:1100 },
+  {min:1100, name:"Opinion Warrior",    next:1400 },
+  {min:1400, name:"Class 6 Champion",   next:9999 }
+];
+
+const BADGES = [
+  {id:"first",     emoji:"🥇", name:"First Mission",   check:s=>s.completed.size>=1},
+  {id:"streak7",   emoji:"🔥", name:"7-Day Streak",    check:s=>s.bestStreak>=7},
+  {id:"speed",     emoji:"⚡", name:"Speed Demon",     check:s=>s.completed.size>=5},
+  {id:"spell",     emoji:"🪄", name:"Spell Caster",    check:s=>s.spellWords>=20},
+  {id:"story",     emoji:"📖", name:"Story Builder",   check:s=>s.completed.has(10)},
+  {id:"boss",      emoji:"⚔️", name:"Boss Slayer",     check:s=>[10,20,30,40,50,60].some(d=>s.completed.has(d))},
+  {id:"comeback",  emoji:"🌟", name:"Comeback Kid",    check:s=>s.usedFreeze},
+  {id:"champion",  emoji:"🏆", name:"Class 6 Champion",check:s=>s.completed.size>=60}
+];
+
+function loadState(){
+  const raw = localStorage.getItem(STORAGE_KEY);
+  let s;
+  try { s = raw ? JSON.parse(raw) : null; } catch(e){ s = null; }
+  if (!s) s = { completed:[], lite:[], xpByDay:{}, mood:{}, spellWords:0, usedFreeze:false, lastActive:null };
+  s.completed = new Set(s.completed || []);
+  s.lite      = new Set(s.lite || []);
+  s.xpByDay   = s.xpByDay || {};
+  s.mood      = s.mood || {};
+  // Merge in coach-verified reviews — verified days count as completed with their final XP
+  for (const v of (VERIFIED.verified||[])){
+    if (typeof v.day === 'number' && v.day >= 1 && v.day <= 60){
+      s.completed.add(v.day);
+      if (typeof v.xp === 'number'){
+        const day = DAYS[v.day-1];
+        const basePlus = 10 + (day && day.boss ? 15 : 0);
+        const extra = Math.max(0, v.xp - basePlus);
+        s.xpByDay[v.day] = Math.max(s.xpByDay[v.day]||0, extra);
+      }
+    }
+  }
+  return s;
+}
+function saveState(s){
+  const out = { ...s, completed:[...s.completed], lite:[...s.lite] };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(out));
+}
+
+function currentDayNumber(s){
+  // Today's mission = the next pending day (works regardless of calendar pace)
+  for (let i=1; i<=60; i++){
+    if (!s.completed.has(i) && !s.lite.has(i)) return i;
+  }
+  return 60; // all done — show final day
+}
+
+function computeXp(s){
+  let xp = 0;
+  for (const d of s.completed){
+    const day = DAYS[d-1];
+    const boss = day && day.boss ? 15 : 0;
+    xp += 10 + boss + (s.xpByDay[d] || 0);
+  }
+  for (const d of s.lite){
+    if (!s.completed.has(d)) xp += 3;
+  }
+  return Math.max(0, xp);
+}
+
+function computeStreak(s){
+  // Trailing streak = consecutive done days ending at the latest done day
+  let last = 0;
+  for (let d=60; d>=1; d--){ if (s.completed.has(d) || s.lite.has(d)) { last = d; break; } }
+  let cur = 0;
+  for (let d=last; d>=1; d--){
+    if (s.completed.has(d) || s.lite.has(d)) cur++;
+    else break;
+  }
+  // Best streak anywhere
+  let best = 0, run = 0;
+  for (let d=1; d<=60; d++){
+    if (s.completed.has(d) || s.lite.has(d)) { run++; if (run > best) best = run; }
+    else run = 0;
+  }
+  s.bestStreak = best;
+  return {current:cur, best};
+}
+
+function levelOf(xp){
+  for (let i=LEVELS.length-1; i>=0; i--) if (xp >= LEVELS[i].min) return {idx:i, ...LEVELS[i]};
+  return {idx:0, ...LEVELS[0]};
+}
+
+// ========= Render =========
+function render(){
+  const s = loadState();
+  const xp = computeXp(s);
+  const streak = computeStreak(s);
+  const lvl = levelOf(xp);
+  const today = currentDayNumber(s);
+  const day = DAYS[today-1];
+
+  // Top bar pills
+  document.getElementById('topStreak').textContent = streak.current;
+  document.getElementById('topXp').textContent = xp;
+  document.getElementById('topLevel').textContent = lvl.idx + 1;
+
+  // Hero
+  document.getElementById('heroDayTitle').textContent = `Day ${day.n} — ${day.theme}`;
+  document.getElementById('heroPhase').textContent = `Phase ${day.phase} · ${phaseLabel(day.phase)} · Target ${day.lines} lines${day.boss?' · BOSS':''}`;
+  document.getElementById('heroPrompt').textContent = day.prompt;
+  document.getElementById('heroLines').textContent = `📝 ${day.lines} lines`;
+  document.getElementById('heroXp').textContent = day.boss ? '+25 XP base' : '+10 XP base';
+  if (day.boss) document.getElementById('heroCard').style.background = 'linear-gradient(135deg,#FF4B4B 0%,#FF8888 100%)';
+  if (s.completed.has(day.n)) {
+    document.getElementById('btnDone').textContent = '✓ Marked done';
+    document.getElementById('btnDone').style.opacity = .65;
+  }
+
+  // Streak card
+  document.getElementById('streakN').textContent = streak.current;
+  document.getElementById('streakFlame').classList.toggle('cold', streak.current === 0);
+  document.getElementById('streakSub').textContent =
+      streak.current === 0 ? "Start today to light it up" :
+      streak.current === 1 ? "First flame! Don't let it go out 🔥" :
+      streak.current < 7   ? `Awesome, keep it going!` :
+      streak.current < 30  ? `Streak champion!` :
+                              `LEGEND mode! 👑`;
+
+  // Level card
+  document.getElementById('levelNum').textContent = lvl.idx + 1;
+  document.getElementById('levelTitle').textContent = lvl.name;
+  const into = xp - lvl.min;
+  const span = lvl.next - lvl.min;
+  const pct = lvl.next >= 9999 ? 100 : Math.min(100, Math.max(0, (into / span) * 100));
+  document.getElementById('xpFill').style.width = pct + '%';
+  document.getElementById('xpText').textContent = lvl.next >= 9999 ? `MAX LEVEL · ${xp} XP` : `${xp} / ${lvl.next} XP`;
+
+  // Stats
+  document.getElementById('statXp').textContent = xp;
+  document.getElementById('statDone').textContent = s.completed.size;
+  document.getElementById('statBest').textContent = streak.best;
+  document.getElementById('statWords').textContent = s.spellWords;
+
+  // Path
+  renderPath(s, today);
+
+  // Badges
+  renderBadges(s);
+
+  // Reviews
+  renderReviews();
+
+  // Chart
+  renderChart(s);
+}
+
+function phaseLabel(p){
+  return p===1?'Fluency':p===2?'Structure':'Independence';
+}
+
+function renderPath(s, today){
+  const grid = document.getElementById('pathGrid');
+  grid.innerHTML = '';
+  const activePhase = parseInt(document.querySelector('.tab.active').dataset.phase);
+  const filtered = DAYS.filter(d=>d.phase===activePhase);
+  filtered.forEach(d=>{
+    const n = document.createElement('button');
+    n.className = 'node';
+    let lbl = d.theme.length>10? d.theme.slice(0,9)+'…' : d.theme;
+    n.innerHTML = `<span class="n">${d.n}</span><span class="lbl">${lbl}</span>`;
+    n.title = `Day ${d.n} · ${d.theme}\n${d.prompt}`;
+    if (s.completed.has(d.n)) n.classList.add('done');
+    else if (d.n === today) n.classList.add('today');
+    else if (d.n < today) n.classList.add('unlocked');
+    else n.classList.add('locked');
+    if (d.boss) n.classList.add('boss');
+    n.addEventListener('click', ()=>openDay(d));
+    grid.appendChild(n);
+  });
+}
+
+function renderBadges(s){
+  const wrap = document.getElementById('badgeGrid');
+  wrap.innerHTML = '';
+  BADGES.forEach(b=>{
+    const earned = b.check(s);
+    const el = document.createElement('div');
+    el.className = 'badge' + (earned ? ' earned' : '');
+    el.innerHTML = `<span class="emoji">${earned?b.emoji:'🔒'}</span><span class="name">${b.name}</span>`;
+    el.title = earned ? `Earned: ${b.name}` : `Locked: ${b.name}`;
+    wrap.appendChild(el);
+  });
+}
+
+function renderReviews(){
+  const list = document.getElementById('reviewsList');
+  list.innerHTML = '';
+  const verified = (VERIFIED.verified||[]).slice().sort((a,b)=>b.day-a.day);
+  if (!verified.length){
+    list.innerHTML = `<div style="font-size:13px;color:var(--ink2);font-weight:700;text-align:center;padding:10px;">No verified reviews yet. Upload a worksheet photo to your parent's chat with Claude — verified XP and praise will appear here.</div>`;
+    return;
+  }
+  verified.forEach(v=>{
+    const el = document.createElement('div');
+    el.className = 'review-item';
+    el.innerHTML = `
+      <div class="head"><span class="day">Day ${v.day} — ${v.theme||''}</span><span class="xp">+${v.xp} XP</span></div>
+      <div class="praise">${(v.praises||[]).map(p=>`<b>★</b> ${escapeHtml(p)}`).join('<br>')}</div>
+      ${v.next?`<div class="next">Next: ${escapeHtml(v.next)}</div>`:''}
+    `;
+    list.appendChild(el);
+  });
+}
+
+function escapeHtml(s){return (s||'').replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"})[c]);}
+
+let chart;
+function renderChart(s){
+  const canvas = document.getElementById('xpChart');
+  const labels = [];
+  const values = [];
+  let cum = 0;
+  for (let d=1; d<=60; d++){
+    labels.push(`D${d}`);
+    if (s.completed.has(d)) { cum += 10 + (DAYS[d-1].boss?15:0) + (s.xpByDay[d]||0); }
+    else if (s.lite.has(d)) { cum += 3; }
+    values.push(cum);
+  }
+  // Graceful fallback if Chart.js fails to load (offline / CDN-blocked)
+  if (typeof Chart === 'undefined'){
+    drawFallbackChart(canvas, labels, values);
+    return;
+  }
+  try{
+    const ctx = canvas.getContext('2d');
+    if (chart) chart.destroy();
+    chart = new Chart(ctx, {
+      type:'line',
+      data:{
+        labels,
+        datasets:[{
+          label:'Cumulative XP',
+          data:values,
+          borderColor:'#58CC02',
+          backgroundColor:'rgba(88,204,2,.15)',
+          fill:true, tension:.3, pointRadius:0, borderWidth:3
+        }]
+      },
+      options:{
+        responsive:true, maintainAspectRatio:false,
+        plugins:{legend:{display:false}},
+        scales:{
+          x:{ticks:{font:{family:'Nunito',weight:'700'},color:'#AFAFAF',maxTicksLimit:12}, grid:{display:false}},
+          y:{ticks:{font:{family:'Nunito',weight:'700'},color:'#AFAFAF'}, grid:{color:'#F0F0F0'}, beginAtZero:true}
+        }
+      }
+    });
+  } catch(err){
+    drawFallbackChart(canvas, labels, values);
+  }
+}
+
+function drawFallbackChart(canvas, labels, values){
+  // Lightweight built-in sparkline fallback that works fully offline
+  const parent = canvas.parentElement;
+  const w = parent.clientWidth || 600;
+  const h = parent.clientHeight || 200;
+  canvas.width = w * (window.devicePixelRatio||1);
+  canvas.height = h * (window.devicePixelRatio||1);
+  canvas.style.width = w+'px';
+  canvas.style.height = h+'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(window.devicePixelRatio||1, window.devicePixelRatio||1);
+  ctx.clearRect(0,0,w,h);
+  const pad = {l:36, r:14, t:14, b:24};
+  const cw = w - pad.l - pad.r;
+  const ch = h - pad.t - pad.b;
+  const maxV = Math.max(10, ...values);
+  // Grid
+  ctx.strokeStyle = '#F0F0F0'; ctx.lineWidth = 1;
+  ctx.fillStyle = '#AFAFAF'; ctx.font = '700 11px Nunito,system-ui';
+  ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+  for (let i=0;i<=4;i++){
+    const y = pad.t + ch * (1 - i/4);
+    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(w-pad.r, y); ctx.stroke();
+    ctx.fillText(Math.round(maxV * i/4), pad.l - 6, y);
+  }
+  // X labels (every 10)
+  ctx.textAlign='center'; ctx.textBaseline='top';
+  for (let i=0;i<labels.length;i+=10){
+    const x = pad.l + cw * (i/(labels.length-1||1));
+    ctx.fillText(labels[i], x, h-pad.b+4);
+  }
+  // Area
+  ctx.beginPath();
+  values.forEach((v,i)=>{
+    const x = pad.l + cw * (i/(values.length-1||1));
+    const y = pad.t + ch * (1 - v/maxV);
+    if (i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  });
+  ctx.lineTo(pad.l + cw, pad.t + ch);
+  ctx.lineTo(pad.l, pad.t + ch);
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(88,204,2,.15)'; ctx.fill();
+  // Line
+  ctx.beginPath();
+  values.forEach((v,i)=>{
+    const x = pad.l + cw * (i/(values.length-1||1));
+    const y = pad.t + ch * (1 - v/maxV);
+    if (i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  });
+  ctx.strokeStyle = '#58CC02'; ctx.lineWidth = 3; ctx.lineJoin='round'; ctx.stroke();
+}
+
+// ========= Actions =========
+function markDone(lite=false){
+  const s = loadState();
+  const today = currentDayNumber(s);
+  if (s.completed.has(today)) { toast("Already marked done today!"); return; }
+  if (lite) s.lite.add(today); else s.completed.add(today);
+  s.lastActive = new Date().toISOString();
+  saveState(s);
+  const day = DAYS[today-1];
+  const xp = lite ? 3 : (10 + (day.boss?15:0));
+  showCelebration(today, day, xp, lite);
+  render();
+  confettiBurst(lite?20:60);
+}
+
+function openDay(d){
+  const s = loadState();
+  const today = currentDayNumber(s);
+  if (d.n > today) { toast("That day is locked. Finish today's mission first 🔒"); return; }
+  showModal({
+    icon: d.boss?'⚔️':'🎯',
+    title:`Day ${d.n} · ${d.theme}`,
+    body:`<div style="text-align:left;font-size:14px;line-height:1.5;color:var(--ink2)"><b style="color:var(--ink);font-size:15px;">Mission:</b><br>${escapeHtml(d.prompt)}<br><br><b style="color:var(--ink);font-size:15px;">Target:</b> ${d.lines} lines · <b>Phase:</b> ${d.phase} · ${d.boss?'<span style="color:var(--red);font-weight:900;">BOSS DAY (+15 XP)</span>':''}</div>`
+  });
+}
+
+function showCelebration(dayN, day, xp, lite){
+  if (lite){
+    showModal({icon:'🌟', title:`Lite day saved!`, body:`+${xp} XP · Streak protected. Tomorrow you go full mission 💪`});
+  } else if (day.boss){
+    showModal({icon:'⚔️', title:`BOSS DEFEATED!`, body:`Day ${dayN} cleared. +${xp} XP earned. You are unstoppable.`});
+  } else {
+    showModal({icon:'🎉', title:`Mission complete!`, body:`+${xp} XP · Day ${dayN} done. Keep that streak burning 🔥`});
+  }
+}
+
+function showModal({icon, title, body}){
+  document.getElementById('modalIcon').textContent = icon;
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalBody').innerHTML = body;
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal(){ document.getElementById('modal').classList.remove('open'); }
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(window._toastTO);
+  window._toastTO = setTimeout(()=>t.classList.remove('show'), 2500);
+}
+
+function confettiBurst(n){
+  const colors = ['#58CC02','#FFC800','#FF9600','#1CB0F6','#CE82FF','#FF4B4B'];
+  for (let i=0;i<n;i++){
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = (Math.random()*100)+'vw';
+    c.style.background = colors[Math.floor(Math.random()*colors.length)];
+    c.style.transform = `rotate(${Math.random()*360}deg)`;
+    document.body.appendChild(c);
+    const dur = 1500 + Math.random()*1500;
+    c.animate([
+      {transform:c.style.transform, top:'-20px'},
+      {transform:`rotate(${Math.random()*720}deg) translateY(110vh)`, top:'110vh'}
+    ], {duration:dur, easing:'cubic-bezier(.2,.7,.4,1)'}).onfinish=()=>c.remove();
+  }
+}
+
+// ========= Wire up =========
+document.getElementById('btnDone').addEventListener('click', ()=>markDone(false));
+document.getElementById('btnLite').addEventListener('click', ()=>markDone(true));
+document.getElementById('btnStart').addEventListener('click', ()=>{
+  const s = loadState();
+  const today = currentDayNumber(s);
+  toast(`Timer time! Set 20–25 min. Mission: Day ${today}`);
+});
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click', ()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+  render();
+}));
+document.getElementById('modal').addEventListener('click', e=>{ if(e.target.id==='modal') closeModal();});
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Arnav's completed worksheet photos — private, kept off the public repo
+worksheets/completed/
+**/IMG_*.jpeg
+**/IMG_*.jpg
+
+# Editor / OS junk
+.idea/
+.vscode/
+*.swp
+Thumbs.db
+
+# Build artifacts (none expected — static site)
+node_modules/
+dist/
+.cache/
