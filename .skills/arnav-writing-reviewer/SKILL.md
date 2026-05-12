@@ -1,6 +1,6 @@
 ---
 name: arnav-writing-reviewer
-description: Review and validate Arnav Kashyap's handwritten Writing Quest submissions. Use this skill whenever Manish says "review", "review day N", "check Arnav's writing", "validate his writing", uploads a photo/PDF of a Writing Quest worksheet, or asks for feedback on Arnav's work. Single-word trigger: "review" — the skill auto-locates the latest unprocessed photo in worksheets/completed/ or Cowork uploads, identifies the day from the worksheet header, runs phase-appropriate feedback (2 praises + 1 suggestion), assigns XP, patches the tracker's verifiedReviews JSON, and tells Manish to run ./tools/sync.sh to push.
+description: Review and validate Arnav Kashyap's handwritten Writing Quest submissions. Use this skill whenever Manish says "review", "review day N", "check Arnav's writing", "validate his writing", uploads a photo/PDF of a Writing Quest worksheet, or asks for feedback on Arnav's work. Single-word trigger: "review" — the skill auto-locates the latest unprocessed photo in public/worksheets/completed/ or Cowork uploads, identifies the day from the worksheet header, runs phase-appropriate feedback (2 praises + 1 suggestion), assigns XP, patches the tracker's verifiedReviews JSON, and tells Manish to run ./tools/sync.sh to push.
 ---
 
 # Arnav Writing Quest — Reviewer
@@ -16,18 +16,18 @@ The single most important rule: **fluency before perfection, confidence before c
 When the user says **"review"** (or any equivalent trigger), follow these steps exactly — do not ask the user where the file is, do not ask which day. Find out yourself.
 
 1. **Locate the photo.** Check in this order:
-   1. `~/Personal/writing-quest/worksheets/completed/` — look for the newest file that is NOT yet named `Day_NN_Theme_YYYY-MM-DD.jpg`. That's the just-dropped one.
+   1. `~/Personal/writing-quest/public/worksheets/completed/` — look for the newest file that is NOT yet named `Day_NN_Theme_YYYY-MM-DD.jpg`. That's the just-dropped one.
    2. Cowork uploads at `/sessions/sweet-zealous-hopper/mnt/uploads/` — look for the newest image.
    3. If still ambiguous, list candidates and ask which.
-2. **Rotate / normalise.** Photos from iPhone come landscape. Detect EXIF orientation and rotate to portrait. Save with the canonical name `Day_NN_Theme_YYYY-MM-DD.jpg` in `worksheets/completed/`.
+2. **Rotate / normalise / resize.** Photos from iPhone come landscape. Detect EXIF orientation and rotate to portrait. Resize the long edge to ~1600px (JPEG quality ~82) so the public repo stays slim. Save with the canonical name `Day_NN_Theme_YYYY-MM-DD.jpg` in `public/worksheets/completed/`. Note: `public/worksheets/completed/` is now **committed publicly** — the photos appear on the portal's gallery and are part of the keepsake. Confirm with Manish before committing anything he flags as private.
 3. **Identify Day N + theme** from the worksheet header (`DAY 3 · MINECRAFT BUILDER`). If header unreadable, ask Manish.
 4. **Determine the phase** (Section 2). The phase decides what you can critique.
 5. **Read the writing carefully.** Note effort vs perfection.
 6. **Apply the 2-to-1 rule** (Section 3) — exactly 2 specific praises + max 1 suggestion.
-7. **Compute XP** (Section 4).
-8. **Patch the tracker.** Edit `~/Personal/writing-quest/index.html` — append a new entry to the `verifiedReviews.verified[]` array inside the `<script id="verifiedReviews">` block. Bump `lastUpdated` to today.
+7. **Compute XP and fill the metrics block** (Section 4).
+8. **Patch the tracker.** Edit `~/Personal/writing-quest/src/data/reviews.json` — append a new entry to the `verified[]` array. Bump `lastUpdated` to today. The entry **must include** the `metrics` block (linesTarget, linesActual, readability, phaseQuality, completion, spellWordsUsed, timeMinutes) — the parent dashboard reads these. Preserve valid JSON; the Astro build will fail loudly if syntax breaks. (The old `index.html` `<script id="verifiedReviews">` block no longer exists.)
 9. **Output** both kid-facing and parent-facing blocks (Section 5).
-10. **Tell Manish to run `./tools/sync.sh`** from `~/Personal/writing-quest/` to commit & push. One command.
+10. **Tell Manish to run `./tools/sync.sh`** from `~/Personal/writing-quest/` to commit & push. One command. Cloudflare Pages will rebuild the Astro site and deploy in ~30s.
 11. **Recommend Day N+1 adjustments** if 3+ submissions give a clear signal (Section 6).
 
 ---
@@ -96,6 +96,22 @@ Trend notes (internal only): ___
 | Used a new spelling-bank word correctly | +1 per word (max +3) |
 
 State the XP clearly to the parent so they can enter it in the Excel tracker. Don't invent extra XP categories.
+
+### Metrics block (required on every review entry)
+
+Every entry in `reviews.json` must carry a `metrics` object. This is what feeds the parent dashboard trend charts. Fill it from the scorecard above; use `null` only if a value truly isn't observable (e.g. no speed-drill timer).
+
+```json
+"metrics": {
+  "linesTarget": 4,
+  "linesActual": 8,
+  "readability": 4,
+  "phaseQuality": 5,
+  "completion": "finished",   // "finished" | "partial" | "none"
+  "spellWordsUsed": 0,
+  "timeMinutes": 14            // or null if unknown
+}
+```
 
 ---
 

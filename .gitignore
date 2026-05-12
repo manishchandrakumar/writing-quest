@@ -2,18 +2,19 @@
 .DS_Store
 **/.DS_Store
 
-# Arnav's completed worksheet photos — private, kept off the public repo
-worksheets/completed/
-**/IMG_*.jpeg
-**/IMG_*.jpg
-
 # Editor / OS junk
 .idea/
 .vscode/
 *.swp
 Thumbs.db
 
-# Build artifacts (none expected — static site)
+# Astro / Node build artifacts
 node_modules/
 dist/
+.astro/
 .cache/
+
+# Raw iPhone exports — only the canonical Day_NN_Theme_YYYY-MM-DD.jpg files
+# (renamed by the reviewer skill) are committed. IMG_*.jpg stays out.
+**/IMG_*.jpeg
+**/IMG_*.jpg

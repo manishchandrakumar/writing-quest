@@ -1,0 +1,38 @@
+---
+import TopBar from '../components/TopBar.astro';
+import '../styles/global.css';
+
+const {
+  title = "Arnav's Writing Quest",
+  description = "A 60-day Duolingo-style writing program for Arnav Kashyap. Daily missions, streaks, XP, coach reviews.",
+  active = '',
+  showStats = false,
+  loadChart = false,
+} = Astro.props;
+---
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet" />
+    {loadChart && (
+      <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    )}
+  </head>
+  <body>
+    <TopBar active={active} showStats={showStats} />
+    <slot />
+    <p class="footnote">
+      Designed for Arnav · Powered by his streak energy 🔥 ·
+      Coach reviews refresh whenever Manish uploads a worksheet.
+    </p>
+  </body>
+</html>

@@ -1,0 +1,30 @@
+---
+import Brand from './Brand.astro';
+const { active = '', showStats = false } = Astro.props;
+const links = [
+  { href: '/',         label: 'Home',  key: 'home' },
+  { href: '/quest',    label: 'Quest', key: 'quest' },
+  { href: '/about',    label: 'About', key: 'about' },
+];
+---
+<header class="topbar">
+  <Brand href="/" />
+  <nav class="nav-links" aria-label="Primary">
+    {links.map(l => (
+      <a href={l.href} class={active === l.key ? 'active' : ''}>{l.label}</a>
+    ))}
+  </nav>
+  {showStats && (
+    <div class="stat-pills">
+      <div class="pill" title="Streak">
+        <span style="font-size:22px">🔥</span><span id="topStreak">0</span>
+      </div>
+      <div class="pill" title="Total XP" style="color:var(--gold-dark)">
+        <span style="font-size:22px">💎</span><span id="topXp">0</span>
+      </div>
+      <div class="pill" title="Level" style="color:var(--purple-dark)">
+        <span style="font-size:22px">🏅</span><span id="topLevel">1</span>
+      </div>
+    </div>
+  )}
+</header>
