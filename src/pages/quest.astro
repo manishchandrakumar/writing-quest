@@ -1,0 +1,104 @@
+---
+import Base from '../layouts/Base.astro';
+import days from '../data/days.json';
+import reviews from '../data/reviews.json';
+---
+<Base title="Arnav's Writing Quest — Tracker" active="quest" showStats={true} loadChart={true}>
+
+<main class="wrap">
+  <section class="main-col">
+    <div class="hero" id="heroCard">
+      <div class="label">Today's Mission</div>
+      <div class="title" id="heroDayTitle">Day 1 — Mission Start</div>
+      <div class="theme" id="heroPhase">Phase 1 · Fluency · Target 3 lines</div>
+      <div class="prompt" id="heroPrompt">Loading…</div>
+      <div class="meta">
+        <span class="chip" id="heroTime">⏱ 20–25 min</span>
+        <span class="chip" id="heroLines">📝 3 lines</span>
+        <span class="chip" id="heroXp">+10 XP base</span>
+      </div>
+      <div class="cta">
+        <button class="btn btn-primary" id="btnStart">Start mission</button>
+        <button class="btn btn-ghost" id="btnDone">I finished ✓</button>
+        <button class="btn btn-ghost" id="btnLite">Lite day (5 min)</button>
+      </div>
+    </div>
+
+    <div class="phase-tabs">
+      <button class="tab active" data-phase="1">Phase 1 · Fluency (1–20)</button>
+      <button class="tab" data-phase="2">Phase 2 · Structure (21–40)</button>
+      <button class="tab" data-phase="3">Phase 3 · Independence (41–60)</button>
+    </div>
+
+    <div class="card">
+      <h3><span class="dot"></span> The Path</h3>
+      <div class="path" id="pathGrid"></div>
+    </div>
+
+    <div class="card" style="margin-top:18px">
+      <h3><span class="dot" style="background:var(--gold-dark)"></span> XP over time</h3>
+      <div style="position:relative;height:200px"><canvas id="xpChart"></canvas></div>
+    </div>
+
+    <div class="card" style="margin-top:18px">
+      <h3><span class="dot" style="background:var(--blue)"></span> Coach's verified reviews</h3>
+      <div class="reviews-list" id="reviewsList"></div>
+    </div>
+  </section>
+
+  <aside class="side">
+    <div class="streak-card">
+      <span class="streak-flame" id="streakFlame">🔥</span>
+      <div class="streak-n" id="streakN">0</div>
+      <div class="streak-lbl">Day streak</div>
+      <div class="streak-sub" id="streakSub">Start today to light it up</div>
+    </div>
+
+    <div class="level-card">
+      <div style="font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:2px;opacity:.85">Level</div>
+      <div class="level-num" id="levelNum">1</div>
+      <div class="level-title" id="levelTitle">Pencil Apprentice</div>
+      <div class="xp-bar"><div class="xp-fill" id="xpFill" style="width:0%"></div></div>
+      <div class="xp-text" id="xpText">0 / 60 XP</div>
+    </div>
+
+    <div class="card">
+      <h3><span class="dot" style="background:var(--blue)"></span> Stats</h3>
+      <div class="stats-grid">
+        <div class="stat-box"><div class="v" id="statXp">0</div><div class="l">Total XP</div></div>
+        <div class="stat-box"><div class="v" id="statDone">0</div><div class="l">Missions done</div></div>
+        <div class="stat-box"><div class="v" id="statBest">0</div><div class="l">Best streak</div></div>
+        <div class="stat-box"><div class="v" id="statWords">0</div><div class="l">Spell words</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="dot" style="background:var(--gold-dark)"></span> Badges</h3>
+      <div class="badges" id="badgeGrid"></div>
+    </div>
+
+    <div style="text-align:center">
+      <button id="btnReset" style="background:none;color:var(--ink3);font-size:11px;font-weight:700;text-decoration:underline;padding:4px;">Reset my progress</button>
+    </div>
+  </aside>
+</main>
+
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <div class="big-icon" id="modalIcon">🎉</div>
+    <h2 id="modalTitle">Mission complete!</h2>
+    <p id="modalBody"></p>
+    <div class="actions">
+      <button class="btn btn-primary" style="background:var(--green);color:#fff;box-shadow:0 4px 0 var(--green-dark)" onclick="closeModal()">Awesome!</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script id="dayData" type="application/json" set:html={JSON.stringify(days)}></script>
+<script id="verifiedReviews" type="application/json" set:html={JSON.stringify(reviews)}></script>
+
+<script src="../scripts/quest.js"></script>
+
+</Base>

@@ -1,0 +1,49 @@
+{
+  "lastUpdated": "2026-05-12",
+  "updatedBy": "Coach Claude",
+  "schema": 2,
+  "verified": [
+    {
+      "day": 1,
+      "theme": "Mission Start",
+      "date": "2026-05-11",
+      "xp": 15,
+      "lang": "nl",
+      "praises": [
+        "You smashed your target — 7 lines on a 3-line mission. More than DOUBLE.",
+        "You explained Dueling Grounds like a real reviewer: what it is, how weapons + coins work, AND why you love it (\"ik ben er heel goed in\"). Pro structure."
+      ],
+      "next": "Same energy on Day 2 — see if you can finish even faster than 14 minutes.",
+      "metrics": {
+        "linesTarget": 3,
+        "linesActual": 7,
+        "readability": 4,
+        "phaseQuality": 5,
+        "completion": "finished",
+        "spellWordsUsed": 0,
+        "timeMinutes": 14
+      }
+    },
+    {
+      "day": 2,
+      "theme": "Friends Mode",
+      "date": "2026-05-12",
+      "xp": 15,
+      "lang": "nl",
+      "praises": [
+        "Double target AGAIN — ~8 lines on a 4-line mission. Two days in a row over 2× target.",
+        "Three reactions in one cricket story: Arsh zweren, Varad in shock, jij begon te lachen. Readers FEEL that moment — pro writer move."
+      ],
+      "next": "Day 3 is Minecraft Builder — same energy. One small thing: write the Start AND End time for the speed drill tomorrow (you forgot today).",
+      "metrics": {
+        "linesTarget": 4,
+        "linesActual": 8,
+        "readability": 4,
+        "phaseQuality": 5,
+        "completion": "finished",
+        "spellWordsUsed": 0,
+        "timeMinutes": null
+      }
+    }
+  ]
+}

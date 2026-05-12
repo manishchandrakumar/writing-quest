@@ -1,0 +1,165 @@
+---
+import Base from '../layouts/Base.astro';
+import days from '../data/days.json';
+import reviews from '../data/reviews.json';
+
+// Compute "today" at build time from the verified reviews only.
+// The client will refine this with local "I finished" clicks after hydration.
+const verifiedDays = new Set((reviews.verified || []).map(v => v.day));
+const todayN = (() => {
+  for (let i = 1; i <= 60; i++) if (!verifiedDays.has(i)) return i;
+  return 60;
+})();
+const today = days.days[todayN - 1];
+const phaseName = today.phase === 1 ? 'Fluency' : today.phase === 2 ? 'Structure' : 'Independence';
+const streakBuild = verifiedDays.size; // upper-bound streak; client will overwrite
+---
+<Base
+  title="Arnav's Writing Quest"
+  description="Today's mission, streak, and progress in Arnav's 60-day writing program."
+  active="home"
+  showStats={true}
+>
+
+<main class="wrap single">
+  <section class="main-col" style="display:flex;flex-direction:column;gap:18px;">
+
+    <div class="streak-card" style="background:linear-gradient(135deg,var(--orange) 0%,#FFB84D 100%);color:#fff;border:none;padding:24px;">
+      <span class="streak-flame" id="homeStreakFlame" style="filter:drop-shadow(0 6px 0 rgba(0,0,0,.15));">🔥</span>
+      <div class="streak-n" id="homeStreakN" style="color:#fff;">{streakBuild}</div>
+      <div class="streak-lbl" style="color:rgba(255,255,255,.85);">Day streak</div>
+    </div>
+
+    <div class="hero" id="heroCard">
+      <div class="label">Today's Mission</div>
+      <div class="title" id="heroDayTitle">Day {today.n} — {today.theme}</div>
+      <div class="theme" id="heroPhase">Phase {today.phase} · {phaseName} · Target {today.lines} lines{today.boss ? ' · BOSS' : ''}</div>
+      <div class="prompt" id="heroPrompt">{today.prompt}</div>
+      <div class="meta">
+        <span class="chip">⏱ 20–25 min</span>
+        <span class="chip">📝 {today.lines} lines</span>
+        <span class="chip">{today.boss ? '+25 XP base' : '+10 XP base'}</span>
+      </div>
+      <div class="cta">
+        <a class="btn btn-primary" href="/quest">Start today's mission →</a>
+        <a class="btn btn-ghost" href="/quest">See the full path</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="dot" style="background:var(--blue)"></span> Latest coach review</h3>
+      <div class="reviews-list" id="homeReviewsList"></div>
+    </div>
+
+  </section>
+</main>
+
+<script id="dayData" type="application/json" set:html={JSON.stringify(days)}></script>
+<script id="verifiedReviews" type="application/json" set:html={JSON.stringify(reviews)}></script>
+
+<script>
+  // Lightweight hydration: refine "today" using localStorage clicks, render the latest review preview,
+  // and update the top-bar pills. Keep this script small — no Chart.js, no path grid.
+  const STORAGE_KEY = 'arnav_quest_v1';
+  const DAYS = JSON.parse(document.getElementById('dayData').textContent).days;
+  const VERIFIED = JSON.parse(document.getElementById('verifiedReviews').textContent);
+
+  const VERIFIED_COMPLETED = new Set((VERIFIED.verified || []).map(v => v.day));
+  const VERIFIED_XP = {};
+  for (const v of (VERIFIED.verified || [])) {
+    if (typeof v.xp === 'number') VERIFIED_XP[v.day] = v.xp;
+  }
+
+  function loadCompleted() {
+    let local = new Set();
+    let lite = new Set();
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const s = JSON.parse(raw);
+        (s.completed || []).forEach(d => local.add(d));
+        (s.lite || []).forEach(d => lite.add(d));
+      }
+    } catch (_) { /* fresh device, no local state */ }
+    const all = new Set([...VERIFIED_COMPLETED, ...local]);
+    return { all, lite };
+  }
+
+  function todayN(completed, lite) {
+    for (let i = 1; i <= 60; i++) {
+      if (!completed.has(i) && !lite.has(i)) return i;
+    }
+    return 60;
+  }
+
+  function totalXp(completed, lite) {
+    let xp = 0;
+    for (const d of completed) {
+      if (VERIFIED_XP[d] != null) xp += VERIFIED_XP[d];
+      else xp += 10 + (DAYS[d - 1].boss ? 15 : 0);
+    }
+    for (const d of lite) if (!completed.has(d)) xp += 3;
+    return xp;
+  }
+
+  function streakOf(completed, lite) {
+    let last = 0;
+    for (let d = 60; d >= 1; d--) if (completed.has(d) || lite.has(d)) { last = d; break; }
+    let cur = 0;
+    for (let d = last; d >= 1; d--) {
+      if (completed.has(d) || lite.has(d)) cur++; else break;
+    }
+    return cur;
+  }
+
+  const LEVELS = [60, 180, 350, 550, 800, 1100, 1400, 9999];
+  function levelOf(xp) {
+    for (let i = LEVELS.length - 1; i >= 0; i--) if (xp >= (i === 0 ? 0 : LEVELS[i - 1])) return i + 1;
+    return 1;
+  }
+
+  function escapeHtml(s) {
+    return (s || '').replace(/[&<>'"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[c]));
+  }
+
+  function hydrate() {
+    const { all, lite } = loadCompleted();
+    const xp = totalXp(all, lite);
+    const cur = streakOf(all, lite);
+    const lvl = levelOf(xp);
+    const t = todayN(all, lite);
+    const day = DAYS[t - 1];
+    const phaseName = day.phase === 1 ? 'Fluency' : day.phase === 2 ? 'Structure' : 'Independence';
+
+    document.getElementById('homeStreakN').textContent = cur;
+    document.getElementById('homeStreakFlame').classList.toggle('cold', cur === 0);
+    document.getElementById('topStreak').textContent = cur;
+    document.getElementById('topXp').textContent = xp;
+    document.getElementById('topLevel').textContent = lvl;
+
+    document.getElementById('heroDayTitle').textContent = `Day ${day.n} — ${day.theme}`;
+    document.getElementById('heroPhase').textContent = `Phase ${day.phase} · ${phaseName} · Target ${day.lines} lines${day.boss ? ' · BOSS' : ''}`;
+    document.getElementById('heroPrompt').textContent = day.prompt;
+    if (day.boss) {
+      document.getElementById('heroCard').style.background = 'linear-gradient(135deg,#FF4B4B 0%,#FF8888 100%)';
+    }
+
+    const list = document.getElementById('homeReviewsList');
+    const verified = (VERIFIED.verified || []).slice().sort((a, b) => b.day - a.day).slice(0, 1);
+    if (!verified.length) {
+      list.innerHTML = `<div style="font-size:13px;color:var(--ink2);font-weight:700;text-align:center;padding:10px;">No verified reviews yet. Finish today's mission to unlock your first coach review!</div>`;
+      return;
+    }
+    list.innerHTML = verified.map(v => `
+      <div class="review-item">
+        <div class="head"><span class="day">Day ${v.day} — ${escapeHtml(v.theme || '')}</span><span class="xp">+${v.xp} XP</span></div>
+        <div class="praise">${(v.praises || []).map(p => `<b>★</b> ${escapeHtml(p)}`).join('<br>')}</div>
+        ${v.next ? `<div class="next">Next: ${escapeHtml(v.next)}</div>` : ''}
+      </div>
+    `).join('');
+  }
+
+  hydrate();
+</script>
+
+</Base>
