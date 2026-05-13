@@ -19,7 +19,15 @@ When the user says **"review"** (or any equivalent trigger), follow these steps 
    1. `~/Personal/writing-quest/public/worksheets/completed/` — look for the newest file that is NOT yet named `Day_NN_Theme_YYYY-MM-DD.jpg`. That's the just-dropped one.
    2. Cowork uploads at `/sessions/sweet-zealous-hopper/mnt/uploads/` — look for the newest image.
    3. If still ambiguous, list candidates and ask which.
-2. **Rotate / normalise / resize.** Photos from iPhone come landscape. Detect EXIF orientation and rotate to portrait. Resize the long edge to ~1600px (JPEG quality ~82) so the public repo stays slim. Save with the canonical name `Day_NN_Theme_YYYY-MM-DD.jpg` in `public/worksheets/completed/`. Note: `public/worksheets/completed/` is now **committed publicly** — the photos appear on the portal's gallery and are part of the keepsake. Confirm with Manish before committing anything he flags as private.
+2. **Rotate / normalise / resize / rename.** Photos from iPhone come landscape and 2–4 MB each — way too big for the public repo. Use the canonical tool:
+
+   ```bash
+   python3 tools/compress-photo.py <source-path> public/worksheets/completed/Day_NN_Theme_YYYY-MM-DD.jpg
+   ```
+
+   The tool applies EXIF orientation, forces portrait, downscales the long edge to 1600 px, strips metadata, and re-encodes as progressive JPEG quality 80 — typically 75–90% smaller (≈300–500 KB final). It is idempotent, so re-running on a compressed file is safe.
+
+   Note: `public/worksheets/completed/` is **committed publicly** — the photos appear on the portal's gallery and are part of the keepsake. Confirm with Manish before committing anything he flags as private. After saving, if the original raw `IMG_*.jpg` is still in the folder, it stays out of git via `.gitignore` — no action needed.
 3. **Identify Day N + theme** from the worksheet header (`DAY 3 · MINECRAFT BUILDER`). If header unreadable, ask Manish.
 4. **Determine the phase** (Section 2). The phase decides what you can critique.
 5. **Read the writing carefully.** Note effort vs perfection.

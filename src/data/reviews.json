@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-05-12",
+  "lastUpdated": "2026-05-13",
   "updatedBy": "Coach Claude",
   "schema": 2,
   "verified": [
@@ -43,6 +43,27 @@
         "completion": "finished",
         "spellWordsUsed": 0,
         "timeMinutes": null
+      }
+    },
+    {
+      "day": 3,
+      "theme": "Minecraft Builder",
+      "date": "2026-05-13",
+      "xp": 15,
+      "lang": "nl",
+      "praises": [
+        "Triple-target this time — your Main Mission box is FULL, you went past 5 lines into a non-stop builder's plan (XP farm → nether banen → een aardse trein). That's flow.",
+        "You remembered the Start AND End times today (21:04 → 21:29). Last time the suggestion was \"don't forget\" — and you nailed it. Coach loves a kid who listens."
+      ],
+      "next": "Day 4 is Story Spark — \"The hero opened the secret door and saw…\". Bring the same Minecraft-building energy, but this time invent a place no one's seen before.",
+      "metrics": {
+        "linesTarget": 5,
+        "linesActual": 9,
+        "readability": 4,
+        "phaseQuality": 5,
+        "completion": "finished",
+        "spellWordsUsed": 0,
+        "timeMinutes": 25
       }
     }
   ]
