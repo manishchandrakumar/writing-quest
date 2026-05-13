@@ -6,8 +6,8 @@
 # What it does:
 #   1. Stages all tracked changes (photos + reviews.json + anything else)
 #   2. Commits with a sensible message ("Day N verified review" from src/data/reviews.json)
-#   3. Pushes to origin/main
-#   4. Cloudflare Pages runs `npm run build` and redeploys in ~30s
+#   3. Pushes to origin/<current branch> (warns if not main)
+#   4. Cloudflare Pages runs `npm run build` and redeploys in ~30s on main
 
 set -e
 
@@ -36,8 +36,18 @@ git add -A
 echo "→ Committing: $MSG"
 git commit -m "$MSG"
 
-echo "→ Pushing to origin/main…"
-git push origin main
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+if [ "$BRANCH" != "main" ]; then
+  echo "⚠  You're on branch '$BRANCH', not main. Pushing there instead."
+  echo "   Cloudflare only auto-deploys from main, so you'll need to merge this branch on GitHub."
+fi
+
+echo "→ Pushing to origin/$BRANCH…"
+git push origin "$BRANCH"
 
 echo ""
-echo "Done. Cloudflare Pages will redeploy in ~30s."
+if [ "$BRANCH" = "main" ]; then
+  echo "Done. Cloudflare Pages will redeploy in ~30s."
+else
+  echo "Pushed to '$BRANCH'. Open the PR and merge to trigger the Cloudflare rebuild."
+fi
