@@ -17,7 +17,7 @@ The user (Manish) drops a photo of Arnav's completed worksheet and says **"revie
 3. Read the worksheet header to identify Day N and theme — don't assume from memory.
 4. Apply phase-aware review (see below), produce 2 specific praises + 1 forward-framed suggestion, compute XP, fill the `metrics` scorecard.
 5. **Patch `src/data/reviews.json`**: append a new entry to the `verified[]` array including the `metrics` block. Bump `lastUpdated` to today. (The Astro build fails on malformed JSON, which catches errors before they reach production.)
-6. Tell Manish to run `./tools/sync.sh`. Don't run it yourself unless asked.
+6. **Ship it yourself.** Create `review/day-NN-YYYY-MM-DD` off main, run `./tools/sync.sh` to commit + push, open a PR with `gh pr create --base main`, then `gh pr merge --auto --squash` so it lands the moment Cloudflare's preview build is green. Manish's only job is the merge click (or watching auto-merge handle it). Full bash recipe in `.skills/arnav-writing-reviewer/SKILL.md` step 10.
 
 Full rubric, XP formula, output format, edge cases: `.skills/arnav-writing-reviewer/SKILL.md`.
 

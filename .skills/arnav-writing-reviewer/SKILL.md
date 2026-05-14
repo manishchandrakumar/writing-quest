@@ -35,7 +35,34 @@ When the user says **"review"** (or any equivalent trigger), follow these steps 
 7. **Compute XP and fill the metrics block** (Section 4).
 8. **Patch the tracker.** Edit `~/Personal/writing-quest/src/data/reviews.json` — append a new entry to the `verified[]` array. Bump `lastUpdated` to today. The entry **must include** the `metrics` block (linesTarget, linesActual, readability, phaseQuality, completion, spellWordsUsed, timeMinutes) — the parent dashboard reads these. Preserve valid JSON; the Astro build will fail loudly if syntax breaks. (The old `index.html` `<script id="verifiedReviews">` block no longer exists.)
 9. **Output** both kid-facing and parent-facing blocks (Section 5).
-10. **Tell Manish to run `./tools/sync.sh`** from `~/Personal/writing-quest/` to commit & push. One command. Cloudflare Pages will rebuild the Astro site and deploy in ~30s.
+10. **Ship it — branch, push, PR, auto-merge.** Manish's job is only to click merge (or let auto-merge handle it). Do all of the following yourself, in order, from the repo root:
+
+    ```bash
+    # 0. Sanity: must be on main with a clean-ish tree (only the review's changes pending).
+    git fetch origin main
+    git checkout main && git pull --ff-only origin main
+
+    # 1. Create the review branch. Naming: review/day-NN-YYYY-MM-DD (zero-pad N, use today's date).
+    BRANCH="review/day-$(printf '%02d' "$DAY_N")-$(date +%F)"
+    git checkout -b "$BRANCH"
+
+    # 2. Stage + commit. sync.sh handles message generation ("Day N verified review")
+    #    and pushes the current branch — it does NOT hardcode main.
+    ./tools/sync.sh
+
+    # 3. Open the PR.
+    gh pr create --base main --head "$BRANCH" \
+      --title "Day $DAY_N verified review" \
+      --body "Verified review for Day $DAY_N ($THEME). Auto-merge enabled — will land on green."
+
+    # 4. Enable auto-merge so the PR lands the moment Cloudflare Pages preview is green.
+    gh pr merge --auto --squash
+    ```
+
+    Notes:
+    - If `gh pr merge --auto` fails because auto-merge isn't enabled on the repo, fall back to leaving the PR open and tell Manish to merge manually — do NOT force-merge.
+    - If `git checkout main` fails because the working tree has unrelated changes, stop and ask Manish — don't stash silently.
+    - End your response with the PR URL so Manish can watch it merge.
 11. **Recommend Day N+1 adjustments** if 3+ submissions give a clear signal (Section 6).
 
 ---
