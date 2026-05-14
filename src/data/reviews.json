@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-05-13",
+  "lastUpdated": "2026-05-14",
   "updatedBy": "Coach Claude",
   "schema": 2,
   "verified": [
@@ -64,6 +64,27 @@
         "completion": "finished",
         "spellWordsUsed": 0,
         "timeMinutes": 25
+      }
+    },
+    {
+      "day": 4,
+      "theme": "Story Spark",
+      "date": "2026-05-14",
+      "xp": 14,
+      "lang": "nl",
+      "praises": [
+        "The emergency-portal twist — \"hij een emergency portal gangsterd\" — that's a save move mid-story. The hero was stuck, then YOU gave him a way out. Real writer thinking.",
+        "Best ending of the week: the room is on a timer and \"als de timer uit op 0 dan gaat de kamer ontploffen.\" Whoever reads this WANTS to know what happens next. That's a cliffhanger."
+      ],
+      "next": "Day 5 is Speed Day — your dream YouTube channel. Use the warm-up doodle box this time too: even a 10-second sketch of your hero makes the story land harder.",
+      "metrics": {
+        "linesTarget": 5,
+        "linesActual": 10,
+        "readability": 4,
+        "phaseQuality": 5,
+        "completion": "finished",
+        "spellWordsUsed": 0,
+        "timeMinutes": 14
       }
     }
   ]
