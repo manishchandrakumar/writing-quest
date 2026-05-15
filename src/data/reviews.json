@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-05-14",
+  "lastUpdated": "2026-05-15",
   "updatedBy": "Coach Claude",
   "schema": 2,
   "verified": [
@@ -85,6 +85,27 @@
         "completion": "finished",
         "spellWordsUsed": 0,
         "timeMinutes": 14
+      }
+    },
+    {
+      "day": 5,
+      "theme": "Speed Day",
+      "date": "2026-05-15",
+      "xp": 14,
+      "lang": "nl",
+      "praises": [
+        "Channel name committed in line ONE: \"Mijn youtube channel is Arnav The Great.\" No hedging — name + niche (gaming: Roblox, Fortnite) + first video topic (Dueling Grond), all locked in. That's pitch-deck structure.",
+        "The \"heeeeel\" ending — \"En het gaat heeeeel leuk zijn\" — you stretched the word on the page the way a real youtuber stretches it in their voice. That's personality landing in writing."
+      ],
+      "next": "Day 6 is Free Pick — ANYTHING. You've covered Roblox, friends, Minecraft, a story, your channel. Pick something you HAVEN'T written about yet (school? family? a movie? Belgium?). 5 days in a row at 2× target — coach is bumping the line target a touch next week.",
+      "metrics": {
+        "linesTarget": 5,
+        "linesActual": 9,
+        "readability": 4,
+        "phaseQuality": 5,
+        "completion": "finished",
+        "spellWordsUsed": 0,
+        "timeMinutes": 15
       }
     }
   ]
