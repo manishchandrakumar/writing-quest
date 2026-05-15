@@ -60,7 +60,9 @@ When the user says **"review"** (or any equivalent trigger), follow these steps 
     ```
 
     Notes:
-    - If `gh pr merge --auto` fails because auto-merge isn't enabled on the repo, fall back to leaving the PR open and tell Manish to merge manually — do NOT force-merge.
+    - The repo has branch protection on `main` requiring the **Cloudflare Pages** check (`strict: true`, force-push + delete blocked). `gh pr merge --auto --squash` therefore waits for the Pages preview build to go green before landing — **don't be surprised when the PR doesn't merge instantly**; that's the gate working.
+    - Merged branches auto-delete (`delete_branch_on_merge: true`). Don't manually delete review/* branches — let GitHub handle it.
+    - If `gh pr merge --auto` fails for any other reason (e.g. PR has unresolved conflicts), leave the PR open and tell Manish — do NOT force-merge or bypass protection (`enforce_admins` is `false`, so Manish *can* override in a real emergency, but that's his call, not yours).
     - If `git checkout main` fails because the working tree has unrelated changes, stop and ask Manish — don't stash silently.
     - End your response with the PR URL so Manish can watch it merge.
 11. **Recommend Day N+1 adjustments** if 3+ submissions give a clear signal (Section 6).
