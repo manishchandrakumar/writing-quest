@@ -19,15 +19,25 @@ When the user says **"review"** (or any equivalent trigger), follow these steps 
    1. `~/Personal/writing-quest/public/worksheets/completed/` — look for the newest file that is NOT yet named `Day_NN_Theme_YYYY-MM-DD.jpg`. That's the just-dropped one.
    2. Cowork uploads at `/sessions/sweet-zealous-hopper/mnt/uploads/` — look for the newest image.
    3. If still ambiguous, list candidates and ask which.
-2. **Rotate / normalise / resize / rename.** Photos from iPhone come landscape and 2–4 MB each — way too big for the public repo. Use the canonical tool:
+2. **Rotate / normalise / resize / rename.** Photos from iPhone come landscape and 2–4 MB each — way too big for the public repo. Use the canonical tool, then rename the raw source so the folder stays clean:
 
    ```bash
-   python3 tools/compress-photo.py <source-path> public/worksheets/completed/Day_NN_Theme_YYYY-MM-DD.jpg
+   # 1. Compress + rename to canonical name (this commits via PR later).
+   .venv/bin/python tools/compress-photo.py \
+     public/worksheets/completed/IMG_NNNN.jpeg \
+     public/worksheets/completed/Day_NN_Theme_YYYY-MM-DD.jpg
+
+   # 2. Rename the raw source to a stable, ignored name. Keep it locally for
+   #    re-compression if needed; never commit it.
+   mv public/worksheets/completed/IMG_NNNN.jpeg \
+      public/worksheets/completed/Day_NN_Theme_RAW_YYYY-MM-DD.jpeg
    ```
 
-   The tool applies EXIF orientation, forces portrait, downscales the long edge to 1600 px, strips metadata, and re-encodes as progressive JPEG quality 80 — typically 75–90% smaller (≈300–500 KB final). It is idempotent, so re-running on a compressed file is safe.
+   The compress tool applies EXIF orientation, forces portrait, downscales the long edge to 1600 px, strips metadata, and re-encodes as progressive JPEG quality 80 — typically 75–90% smaller (≈300–500 KB final). It is idempotent, so re-running on a compressed file is safe.
 
-   Note: `public/worksheets/completed/` is **committed publicly** — the photos appear on the portal's gallery and are part of the keepsake. Confirm with Manish before committing anything he flags as private. After saving, if the original raw `IMG_*.jpg` is still in the folder, it stays out of git via `.gitignore` — no action needed.
+   Note: `public/worksheets/completed/` is **committed publicly** — the compressed `Day_NN_Theme_YYYY-MM-DD.jpg` files appear on the portal's gallery and are part of the keepsake. Both `IMG_*.jpeg` and `*_RAW_*.jpeg` patterns are in `.gitignore`, so the raw original stays local-only either way. Confirm with Manish before committing anything he flags as private.
+
+   If `.venv/bin/python` doesn't exist yet, create it once: `python3 -m venv .venv && .venv/bin/pip install Pillow reportlab pypdf`. System Python is PEP-668-blocked from pip-installing on this Mac.
 3. **Identify Day N + theme** from the worksheet header (`DAY 3 · MINECRAFT BUILDER`). If header unreadable, ask Manish.
 4. **Determine the phase** (Section 2). The phase decides what you can critique.
 5. **Read the writing carefully.** Note effort vs perfection.
@@ -85,6 +95,8 @@ Match the day number to the correct phase. The "Review ONLY" column is the ONLY 
 
 **Hard rule:** if Arnav is on Day 1–14 and his spelling is bad, you do NOT mention spelling. You note it internally for trend tracking, but the parent-facing feedback skips it entirely. This is not negotiable — the program's success depends on protecting the early streak.
 
+**Spell-bank carve-out (Days 8, 11, 13, 28, 34):** On days where the *prompt itself* introduces specific spell-bank words (see `days.json`), you may **count and praise** the spell-bank words he used and award +1 XP per word (max +3). You still do **not** critique other spelling on those days. The distinction is: "you used `because`, `friend`, and `school` — that's the spell bank locked in" ✅ vs. "watch your spelling on `wapons`" ❌. The first praises mastery; the second breaks Phase 1.
+
 ---
 
 ## 3. The 2-to-1 review rule
@@ -128,11 +140,15 @@ Trend notes (internal only): ___
 | Hit/exceeded line target | +2 |
 | Visible continuous flow (no restart marks for 5+ lines) | +2 |
 | Self-marked a favourite word/line | +1 |
+| Self-engaged a metacognitive box (computed own XP, tracked own progress, etc.) | +1 |
+| Week-Wrap milestone day (Days 7/14/21/28/35/42/49/56) bonus | +3 |
 | Boss Day (10/20/30/40/50/60) | +15 bonus |
 | Beat a previous speed-drill record (warm-up box) | +3 |
 | Used a new spelling-bank word correctly | +1 per word (max +3) |
 
-State the XP clearly to the parent so they can enter it in the Excel tracker. Don't invent extra XP categories.
+State the XP clearly to the parent so they can enter it in the Excel tracker. **The list above is exhaustive — don't invent categories not in this table.** If you see something extraordinary that doesn't fit (e.g. wrote a sequel to a previous day's story, made up a new genre), call it out in praise text and leave XP unchanged.
+
+**Line-target tie-break:** If the worksheet's *printed prompt* and the box's *target lines* disagree (this happened Day 6: prompt said 6, box said 12), score against the **box target**. The printed box target is what the parent and the tracker show. Note the conflict in your internal scorecard.
 
 ### Metrics block (required on every review entry)
 
@@ -207,13 +223,16 @@ After 3+ submissions you have enough data to recommend tuning. Use these rules:
 |---|---|
 | Hit line target 3 days in a row | Bump target by 1–2 lines next day. |
 | Missed line target 2 days in a row | Hold current target for 3 more days. Do not lower. |
+| Actual lines plateaus (~10 lines) while printed target keeps climbing | The printed target was over-tuned, not the kid under-performing. Don't pressure to hit it. Hold or shrink the target. **Observed Week 1:** Days 6 & 7 jumped from 5→12→14 lines while he stayed at ~10. He's writing what feels right, not what the box demands. |
 | Readability < 3 for 2 days | Add a 1-min "shake hand + slow first sentence" warm-up. Still don't critique neatness. |
 | Took >30 min on the session | Cut the prompt scope: switch from "describe + explain" to just "describe". |
+| Reflective / milestone day took 20–25 min | That's depth, not slow. Don't flag. |
 | Finished in <15 min easily | Add the optional speed-stretch line at the bottom of next worksheet. |
 | Used 3+ new spell-bank words correctly in a week | Promote to next 5 words from Appendix A. |
 | Refused twice in 7 days | Recommend Lite Days + topic switch to pure gaming. Re-check the reward at Day 30. |
+| Phase-quality scoring 5/5 for 4+ days in a row, with clear structural moves (claim+reason, cliffhanger, voice) | He's hitting Phase 2/3 skills early. Don't accelerate the program — protect the streak. Just call it out in the parent block as a "skill surfacing ahead of schedule" note. |
 
-**If you recommend changes to Days 8+**, also offer to regenerate the printable worksheets with the new targets. Do not auto-regenerate without parent confirmation.
+**Generating new worksheets:** Use `python3 tools/generate-worksheets.py <week_n> [--force]`. It reads `src/data/days.json` and per-day warm-up/speed-drill copy from a table at the top of the script. Outputs one PDF per day plus `Print_All_Week_N.pdf`. **If you recommend target changes to Days 8+**, edit `days.json`, then regenerate with `--force` and offer the new file to Manish. Do not auto-regenerate without parent confirmation.
 
 ---
 
@@ -244,11 +263,11 @@ When validating, read the prompt as written on the page — do not assume conten
 
 ## 9. Edge cases
 
+- **Default language is Dutch with English/code-mixing.** Arnav wrote in Dutch for all 7 days of Week 1 with frequent code-mixing (*wapons, unlocken, gangsterd, tons hou van*). Praise specific Dutch words or phrases as quotes. Set `"lang": "nl"` in the metrics block. **Phase 1 rule still holds:** code-mixing reads as a spelling issue but is not — and either way it's off-limits to mention until Phase 2.
 - **Blank page submitted:** Treat as Recovery Day. Award 0 XP but recommend a 5-min Lite Day prompt. Do not break the streak.
 - **Multiple days on one page:** Score each separately. Output one parent block per day.
 - **Page is upside-down / sideways:** Rotate mentally, review normally. Do not penalise.
 - **Cannot read the handwriting at all:** Ask the parent to retype the writing into the chat. Don't guess.
-- **Arnav wrote in Dutch:** Fine. Praise specific Dutch words or phrases. Note language for the parent. Same review rules apply.
 - **Off-topic but engaged:** If the writing is energetic but ignored the prompt, praise the energy + suggest "next time, tie your great ideas to the question." Still award XP.
 
 ---
