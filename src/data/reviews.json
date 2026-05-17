@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-05-16",
+  "lastUpdated": "2026-05-17",
   "updatedBy": "Coach Claude",
   "schema": 2,
   "verified": [
@@ -127,6 +127,27 @@
         "completion": "finished",
         "spellWordsUsed": 0,
         "timeMinutes": 16
+      }
+    },
+    {
+      "day": 7,
+      "theme": "Week 1 Wrap",
+      "date": "2026-05-17",
+      "xp": 12,
+      "lang": "nl",
+      "praises": [
+        "Three-part prompt, three-part answer. You named (1) what you want to improve — speed: \"ik wil zelfverbeteren\" — (2) your favorite topic (Roblox Dueling Grond + WHY), and (3) a moment you're proud of (the 6-win game). That's essay structure, age 10.",
+        "You did the XP math yourself in the Big Celebration box: 15+15+15+14+14+12 = 85. You owned your own week. Coach didn't have to add it up — YOU did."
+      ],
+      "next": "Week 2 starts tomorrow. Day 8 unlocks the SPELL BANK — 5 new words (because, friend, school, before, every) — try to slip them into a 6-line story. New chapter, same writer.",
+      "metrics": {
+        "linesTarget": 14,
+        "linesActual": 13,
+        "readability": 4,
+        "phaseQuality": 5,
+        "completion": "finished",
+        "spellWordsUsed": 0,
+        "timeMinutes": 23
       }
     }
   ]
