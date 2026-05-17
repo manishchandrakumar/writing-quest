@@ -22,6 +22,8 @@ dist/
 .claude/
 
 # Raw iPhone exports — only the canonical Day_NN_Theme_YYYY-MM-DD.jpg files
-# (renamed by the reviewer skill) are committed. IMG_*.jpg stays out.
+# (renamed by the reviewer skill) are committed. IMG_*.jpg and *_RAW_*.jpeg stay out.
 **/IMG_*.jpeg
 **/IMG_*.jpg
+**/*_RAW_*.jpeg
+**/*_RAW_*.jpg
