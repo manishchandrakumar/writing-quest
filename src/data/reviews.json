@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-05-17",
+  "lastUpdated": "2026-05-18",
   "updatedBy": "Coach Claude",
   "schema": 2,
   "verified": [
@@ -148,6 +148,27 @@
         "completion": "finished",
         "spellWordsUsed": 0,
         "timeMinutes": 23
+      }
+    },
+    {
+      "day": 8,
+      "theme": "Spelling Sneak-In",
+      "date": "2026-05-18",
+      "xp": 16,
+      "lang": "nl",
+      "praises": [
+        "Spell-bank LOCKED IN. You filled the warm-up box with all 5 words clean (because, friend, school, before, every) AND wove school, friend, and before straight into the story. \"Hij gaat naar school elk dag met zijn friend\" — that's three words doing real work in one sentence.",
+        "You opened with the classic story move — \"Once upon a time there was a boy nam[ed]…\" — then code-switched into Dutch and kept the narrative going (Devin, the 8:20 arrival, sleeping at 11:30pm). Two languages, one storyline. That's a writer's instinct."
+      ],
+      "next": "Day 9 is Continuous Flow — a 3-min non-stop flow + 'If I were principal for a day…' (6-7 lines). Try to keep the pen moving the whole 3 minutes — don't lift it to think.",
+      "metrics": {
+        "linesTarget": 6,
+        "linesActual": 7,
+        "readability": 3,
+        "phaseQuality": 4,
+        "completion": "finished",
+        "spellWordsUsed": 3,
+        "timeMinutes": 24
       }
     }
   ]
