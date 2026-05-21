@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-05-20",
+  "lastUpdated": "2026-05-21",
   "updatedBy": "Coach Claude",
   "schema": 2,
   "verified": [
@@ -211,6 +211,27 @@
         "completion": "finished",
         "spellWordsUsed": 0,
         "timeMinutes": 27
+      }
+    },
+    {
+      "day": 11,
+      "theme": "Game Day",
+      "date": "2026-05-21",
+      "xp": 14,
+      "lang": "nl",
+      "praises": [
+        "You wrote a real opinion piece with a COUNTER-argument, not just a pick. \"Ja Minecraft is ook een leuke spel MAAR het is alleen één spel en ja je kan nog downloaden MAAR Roblox is heel veel spelletjes in een.\" That's pick → concession (\"yes the other side has a point\") → counter (\"but here's why mine still wins\"). Phase 3 teaches that on Day 50. You wrote it on Day 11.",
+        "You signposted your reason out loud: \"en je reden waarom is dat, omdat Roblox heeft meerdere games dan Minecraft.\" Most kids hide their reason; you announced it. \"The reason why is…\" is exactly how essay writers tell the reader what's coming next."
+      ],
+      "next": "Day 12 is Speed Beat — speed challenge + 7 lines on 'the fastest thing I've ever done.' After 3 days of big-prompt thinking, this one's pure adrenaline. Don't overthink it — just GO.",
+      "metrics": {
+        "linesTarget": 7,
+        "linesActual": 8,
+        "readability": 4,
+        "phaseQuality": 5,
+        "completion": "finished",
+        "spellWordsUsed": 0,
+        "timeMinutes": 20
       }
     }
   ]
