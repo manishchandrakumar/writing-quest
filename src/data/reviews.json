@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-05-21",
+  "lastUpdated": "2026-05-22",
   "updatedBy": "Coach Claude",
   "schema": 2,
   "verified": [
@@ -232,6 +232,27 @@
         "completion": "finished",
         "spellWordsUsed": 0,
         "timeMinutes": 20
+      }
+    },
+    {
+      "day": 12,
+      "theme": "Speed Beat",
+      "date": "2026-05-22",
+      "xp": 14,
+      "lang": "nl",
+      "praises": [
+        "Two answers, two reasons, in one piece — and you signposted both. Fastest action: swimming \"omdat ik kan mijn armen heel goed zwaaien.\" Fastest daily thing: eating \"omdat ik eet gewoon grote stukjes daarom.\" Three \"omdat\"s in 8 lines means your brain is now wired to back up every claim with WHY. That's essay-writer behaviour, no one taught you that.",
+        "Your stretched-word signature is back: \"ik zwem heeeeel snel\" — same move you pulled on Day 5 with \"heeeeel leuk.\" A signature is what readers recognise across multiple pieces. You have one. Most writers don't find theirs until they're adults."
+      ],
+      "next": "Day 13 is YouTube Mode — write a 7-line video script INTRO for your dream channel. Think about how MrBeast / Shiloh & Bros open their videos — they HOOK you in the first 5 seconds. Do that.",
+      "metrics": {
+        "linesTarget": 7,
+        "linesActual": 8,
+        "readability": 4,
+        "phaseQuality": 5,
+        "completion": "finished",
+        "spellWordsUsed": 0,
+        "timeMinutes": 22
       }
     }
   ]
