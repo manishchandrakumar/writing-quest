@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-05-23",
+  "lastUpdated": "2026-05-24",
   "updatedBy": "Coach Claude",
   "schema": 2,
   "verified": [
@@ -274,6 +274,27 @@
         "completion": "finished",
         "spellWordsUsed": 0,
         "timeMinutes": 31
+      }
+    },
+    {
+      "day": 14,
+      "theme": "Family Fun",
+      "date": "2026-05-24",
+      "xp": 17,
+      "lang": "nl",
+      "praises": [
+        "You went concrete from line one: \"om 10:00 vertrokken met mijn mama en papa naar een waterpark.\" A specific time (10:00), specific people (mama AND papa), specific place (waterpark). That's a reader getting EVERYTHING in 12 words. Vague openings are the most common writing mistake — you didn't make it.",
+        "You picked TODAY as the best family moment of the whole month. The prompt said 'this month' and you trusted your freshest, most-alive memory over what \"should\" count. Writers always pick the moment that's still humming — and that one was: papa, you, the waterslides. \"heeeeeel leuk met hem.\""
+      ],
+      "next": "Week 3 starts tomorrow. Day 15 is Story Opener — write the opening of an adventure story, hook the reader in 8 lines. After 14 days, you've earned a Week 2 wrap. Coach is proud.",
+      "metrics": {
+        "linesTarget": 8,
+        "linesActual": 8,
+        "readability": 4,
+        "phaseQuality": 4,
+        "completion": "finished",
+        "spellWordsUsed": 0,
+        "timeMinutes": 33
       }
     }
   ]
