@@ -74,6 +74,38 @@ WARMUP = {
          "Write 5 video title ideas in 60 seconds (just titles, no story yet)."),
     14: ("Re-read your favourite Week 2 day quietly to yourself. Tick the box when done.",
          "Write 5 names of family members or pets in under 30 seconds."),
+
+    # Week 3 — Phase 1 closes (Days 15-20), Phase 2 opens (Day 21)
+    15: ("Doodle the hero of your adventure in the box. Sword? Hood? Cape? You decide.",
+         "Speed sentence: 'The door creaked open.' Copy 4 times in under 60 seconds."),
+    16: ("Sketch a tiny game piece or arena in the box (Roblox, Minecraft, or invented).",
+         "Write 5 made-up game names in 60 seconds. Don't fix them."),
+    17: ("Draw a tiny Binocs-style speech bubble in the box (just the bubble).",
+         "Speed copy: 'Today we explore…' 4 times in under 60 seconds."),
+    18: ("Doodle one secret object the three of you could find (key, map, portal, gem — your call).",
+         "Write 3 words for Arsh, 3 words for Varad, 3 words for you. 60 seconds."),
+    19: ("Write your school's name once, big, in the box.",
+         "Write 5 things you like about Class 5 in 60 seconds (just words, not sentences)."),
+    20: ("BOSS DAY warm-up: re-read Days 1–19 headings (in the tracker or PDFs). Tick the box when done.",
+         "Speed copy: 'I am Phase 1 cleared.' 5 times in under 60 seconds."),
+    21: ("PHASE 2 BEGINS. Write the 4 paragraph words in the box: TOPIC, IDEA, IDEA, CLOSE.",
+         "Speed sentence: 'My paragraph has a shape.' Copy 4 times in under 60 seconds."),
+
+    # Week 4 — Phase 2 paragraph shape (Days 22-28)
+    22: ("Draw a tiny school building in the box (3 lines, a roof, a door — that's all).",
+         "Write 5 school-memory words in 60 seconds: classroom, teacher, lunch, friend, recess (or your own)."),
+    23: ("Doodle your perfect meal on a plate in the box.",
+         "Write 5 taste/smell words in 60 seconds (sweet, salty, warm, crispy, sour…)."),
+    24: ("Doodle Arsh OR Varad as a stick figure in the box. Add ONE detail that's just them.",
+         "Write 5 things a great friend does in 60 seconds (just words, e.g. 'listens', 'shares')."),
+    25: ("Draw a tiny Belgium-style frites cone OR a Mechelen tower in the box. Your call.",
+         "Write 5 things you'd show a visitor in Mechelen in 60 seconds."),
+    26: ("Write the 5 connectors in the box: AND, BUT, THEN, SO, BECAUSE.",
+         "Speed sentence: 'I run AND I jump THEN I rest.' Copy 3 times in under 60 seconds."),
+    27: ("Doodle a tiny weapon, tool, or block from your favourite game in the box.",
+         "Write 5 game-strategy words in 60 seconds (e.g. 'plan', 'wait', 'rush', 'aim', 'team')."),
+    28: ("Write the 5 spell-bank words in the box: important, together, between, through, around.",
+         "Speed sentence: 'We work together every day.' Copy 4 times in under 60 seconds."),
 }
 
 DEFAULT_WARMUP = (
@@ -242,9 +274,13 @@ def render_day(c: canvas.Canvas, day: dict, week_n: int):
 
     c.setFont("Helvetica-Oblique", 7.5)
     c.setFillColor(HexColor("#6b7280"))
+    phase_tagline = {
+        1: "Phase 1 — Fluency before perfection",
+        2: "Phase 2 — Paragraph shape",
+        3: "Phase 3 — Class 6 ready",
+    }.get(phase, f"Phase {phase}")
     c.drawCentredString(width / 2, 12 * mm,
-                        "Writing Quest · Designed for Arnav Kashyap · "
-                        f"Phase {phase} — Fluency before perfection")
+                        f"Writing Quest · Designed for Arnav Kashyap · {phase_tagline}")
 
 
 def self_check_for(n: int) -> str:
@@ -263,6 +299,24 @@ def self_check_for(n: int) -> str:
         12: "Compare today's name-speed to Day 5's. Faster? Tick the box.",
         13: "Read your intro out loud like a real YouTuber. Big voice.",
         14: "Tell a parent who in your family this story is about.",
+
+        # Week 3 — Phase 1 close
+        15: "Read your opening to a parent. Did they want to know what happens next? If yes, draw a star.",
+        16: "Pitch your new game to a parent in 30 seconds. Convince them to play it.",
+        17: "Read your explanation to a parent. If they understood Minecraft after, tick the box.",
+        18: "Tell a parent the SECRET you and your friends discovered. Don't write it — say it.",
+        19: "Circle the one Class-5 thing you'd miss most if it disappeared tomorrow.",
+        20: "PHASE 1 CLEARED! Add up Week 1 + Week 2 + Week 3 XP. Big celebration.",
+        21: "Underline your topic sentence in GREEN. Underline your closing sentence in RED. Two colours, two ends.",
+
+        # Week 4 — Phase 2 paragraph shape
+        22: "Show a parent your topic sentence. Ask them what they expect the paragraph to be about.",
+        23: "Read your paragraph to a parent. If they got hungry, draw a star.",
+        24: "Send your paragraph to Arsh or Varad (with permission). True writer move.",
+        25: "Tell a parent ONE thing about Mechelen you didn't write down — save it for next time.",
+        26: "Circle every connector you used. Count them. Aim for at least 4.",
+        27: "Read your strategy to a parent. Could they win a match using your plan?",
+        28: "Underline each spell-bank word you used. Count them. Aim for all 5.",
     }
     return table.get(n, "Read your writing back to a parent. Circle the best word.")
 
