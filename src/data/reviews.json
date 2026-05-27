@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-05-24",
+  "lastUpdated": "2026-05-27",
   "updatedBy": "Coach Claude",
   "schema": 2,
   "verified": [
@@ -295,6 +295,27 @@
         "completion": "finished",
         "spellWordsUsed": 0,
         "timeMinutes": 33
+      }
+    },
+    {
+      "day": 15,
+      "theme": "Story Opener",
+      "date": "2026-05-27",
+      "xp": 15,
+      "lang": "nl",
+      "praises": [
+        "Your portal had a SIGN that talked to the reader: \"Hallo... van de andere kant van deze portal staat er een andere wereld met gevaar en [monsters], wil je in deze portal gaan?\" That's the story breaking the 4th wall — the same move Goosebumps and Choose-Your-Own-Adventure books use. Most writers don't try that until high school. You did it on Day 15.",
+        "Best closing move in 15 days: \"De jongen had heel veel vragen... maar dan was hij in de portal.\" He had questions BUT THEN he was already in. The story chose for him. That's the involuntary-hero turn — the exact move The Hobbit, Narnia, and Harry Potter all open with. The reader HAS to keep reading."
+      ],
+      "next": "Day 16 is Idea Forge — invent a NEW game. Name, players, rules. 8 lines. Bring the same world-building energy you just used for the portal, but pointed at a game.",
+      "metrics": {
+        "linesTarget": 8,
+        "linesActual": 13,
+        "readability": 3,
+        "phaseQuality": 5,
+        "completion": "finished",
+        "spellWordsUsed": 0,
+        "timeMinutes": 24
       }
     }
   ]
