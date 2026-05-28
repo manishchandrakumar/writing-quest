@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-05-27",
+  "lastUpdated": "2026-05-28",
   "updatedBy": "Coach Claude",
   "schema": 2,
   "verified": [
@@ -316,6 +316,27 @@
         "completion": "finished",
         "spellWordsUsed": 0,
         "timeMinutes": 24
+      }
+    },
+    {
+      "day": 16,
+      "theme": "Idea Forge",
+      "date": "2026-05-28",
+      "xp": 14,
+      "lang": "nl",
+      "praises": [
+        "You re-invented CRICKET — and gave it a Roblox-style name (\"Cirket: Hitemite\"). That's a real cultural bridge move: your dad's sport, your game-design vocabulary. Most kids invent a game from scratch and forget half the rules. You took a real sport and rebuilt it like nobody had ever seen it before.",
+        "Full rules manual in 13 lines: name → win condition → lobby/setup → 2 teams + 2 sides → coin flip → bowler role → batter role → SIX rule (\"als de bal over de grond geraakt is dan is het 6 punten\"). That's exactly how board-game manuals open. You wrote a Doctor-Binocs explanation one day BEFORE the Doctor-Binocs prompt."
+      ],
+      "next": "Day 17 IS Doctor Binocs — explain Minecraft like he would. You just proved you can do this. Same rules-manual structure, but Minecraft instead of Cirket.",
+      "metrics": {
+        "linesTarget": 8,
+        "linesActual": 13,
+        "readability": 3,
+        "phaseQuality": 5,
+        "completion": "finished",
+        "spellWordsUsed": 0,
+        "timeMinutes": 28
       }
     }
   ]
