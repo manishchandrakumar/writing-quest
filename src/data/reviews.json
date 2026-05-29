@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-05-28",
+  "lastUpdated": "2026-05-29",
   "updatedBy": "Coach Claude",
   "schema": 2,
   "verified": [
@@ -337,6 +337,27 @@
         "completion": "finished",
         "spellWordsUsed": 0,
         "timeMinutes": 28
+      }
+    },
+    {
+      "day": 17,
+      "theme": "Doctor Binocs",
+      "date": "2026-05-29",
+      "xp": 14,
+      "lang": "en",
+      "praises": [
+        "You stayed IN CHARACTER as Doctor Binocs from line 1 to the signature at the very bottom of the page. Opener: \"Hello frends frends, today we will explore de world of minecraft. Lets zoom in.\" Closer (written OUTSIDE the writing box, under the footer): \"this is me dr.binocs, thank you frends for listening.\" That's exactly how every Binocs episode starts and ends. You didn't write about Binocs — you BECAME him for 38 minutes.",
+        "Encyclopedia-level facts inside the character voice: \"minecraft was created in May 17, 2009 by Markus 'Notch' Persson\" — with the nickname IN QUOTES. Then full content: 3 dimensions (overworld, nether, end), mobs (spiders, zombies, skeletons), tools (pickaxes, swords, axes), and the Ender Dragon final boss. That's a real Binocs episode, structured like one, scripted like one."
+      ],
+      "next": "Day 18 is Friends Story — Arsh, Varad and you discover a secret. 9 lines. After your portal story on Day 15 and your Binocs script today, this is your sweet spot: friends + secret + reveal.",
+      "metrics": {
+        "linesTarget": 8,
+        "linesActual": 15,
+        "readability": 3,
+        "phaseQuality": 5,
+        "completion": "finished",
+        "spellWordsUsed": 0,
+        "timeMinutes": 38
       }
     }
   ]
